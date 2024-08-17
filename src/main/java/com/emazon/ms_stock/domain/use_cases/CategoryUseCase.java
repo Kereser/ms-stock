@@ -4,10 +4,8 @@ package com.emazon.ms_stock.domain.use_cases;
 import com.emazon.ms_stock.domain.api.ICategoryServicePort;
 import com.emazon.ms_stock.domain.model.Category;
 import com.emazon.ms_stock.domain.spi.ICategoryPersistencePort;
-import org.springframework.dao.DuplicateKeyException;
 
 import java.util.List;
-import java.util.Optional;
 
 public class CategoryUseCase implements ICategoryServicePort {
 
@@ -19,10 +17,14 @@ public class CategoryUseCase implements ICategoryServicePort {
 
     @Override
     public void save(Category category) {
-        Optional<Category> optCategory = persistencePort.getByName(category.getName());
 
-        if (optCategory.isPresent()) {
-            throw new DuplicateKeyException("Name must be unique");
+        if (category.getDescription().isEmpty() || category.getDescription().isBlank()) {
+            throw new RuntimeException("Description cannot be empty");
+        }
+
+        String name = category.getName();
+        if (name.isEmpty() || name.isBlank() || name.length() > 50) {
+            throw new RuntimeException("Name must not be longer than 50 characters.");
         }
 
         persistencePort.save(category);
