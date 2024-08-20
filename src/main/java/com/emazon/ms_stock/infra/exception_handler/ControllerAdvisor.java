@@ -5,9 +5,11 @@ import com.emazon.ms_stock.infra.exception.CategoryAlreadyExists;
 import com.emazon.ms_stock.infra.exception.CategoryFieldConstraint;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @ControllerAdvice
@@ -21,10 +23,16 @@ public class ControllerAdvisor {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(MESSAGE, msg));
     }
 
-    @ExceptionHandler(CategoryFieldConstraint.class)
-    public ResponseEntity<Map<String, String>> handleFieldConstrainsViolantion(BaseEntityException ex) {
-        String msg = ex.getEntityName() + ExceptionResponse.FIELD_CONSTRAINT_VIOLATION.getMessage();
-        String reason = ex.getField() + " " + ex.getReason();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(MESSAGE, msg, REASON, reason));
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, Object>> handleFieldValidations(MethodArgumentNotValidException ex) {
+        Map<String, Object> res = new HashMap<>();
+        res.put(MESSAGE, "Request has field validation errors");
+
+        Map<String, String> fieldErrors = new HashMap<>();
+        ex.getBindingResult().getFieldErrors().forEach(e -> fieldErrors.put(e.getField(), e.getDefaultMessage()));
+
+        res.put("Field errors", fieldErrors);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
 }
