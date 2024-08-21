@@ -5,7 +5,6 @@ import com.emazon.ms_stock.domain.spi.ICategoryPersistencePort;
 import com.emazon.ms_stock.infra.out.jpa.entity.CategoryEntity;
 import com.emazon.ms_stock.infra.out.jpa.repository.CategoryJpaRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DuplicateKeyException;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,15 +16,8 @@ public class CategoryJpaAdapter implements ICategoryPersistencePort {
 
     @Override
     public void save(Category category) {
-        Optional<CategoryEntity> optCategory = categoryJpaRepository.findByName(category.getName());
+        CategoryEntity categoryEntity = CategoryEntity.builder().name(category.getName()).description(category.getDescription()).build();
 
-        if (optCategory.isPresent()) {
-            throw new DuplicateKeyException("Name must be unique");
-        }
-
-        CategoryEntity categoryEntity = new CategoryEntity();
-        categoryEntity.setName(category.getName());
-        categoryEntity.setDescription(category.getDescription());
         categoryJpaRepository.save(categoryEntity);
     }
 
@@ -56,6 +48,14 @@ public class CategoryJpaAdapter implements ICategoryPersistencePort {
 
     @Override
     public Optional<Category> getByName(String name) {
-        return Optional.empty();
+        Optional<CategoryEntity> optCategory = categoryJpaRepository.findByName(name);
+
+        if (optCategory.isEmpty()) {
+            return Optional.empty();
+        }
+
+        CategoryEntity entity = optCategory.get();
+        Category category = new Category(entity.getName(), entity.getDescription());
+        return Optional.of(category);
     }
 }
