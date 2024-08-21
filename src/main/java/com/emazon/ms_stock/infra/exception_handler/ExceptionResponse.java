@@ -1,15 +1,16 @@
 package com.emazon.ms_stock.infra.exception_handler;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Builder;
 import lombok.Getter;
 
+import java.util.Map;
+
 @Getter
-public enum ExceptionResponse {
-    ENTITY_ALREADY_EXISTS(" already exists"),
-    FIELD_CONSTRAINT_VIOLATION(" has field constraint violation");
+@Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class ExceptionResponse {
 
-    private final String message;
-
-    ExceptionResponse(String msg) {
-        message = msg;
-    }
+    private String message;
+    private Map<String, Object> fieldErrors;
 }
