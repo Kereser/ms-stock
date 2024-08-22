@@ -2,7 +2,6 @@ package com.emazon.ms_stock.infra.input.rest;
 
 import com.emazon.ms_stock.application.dto.CategoryReqDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -24,31 +23,67 @@ class StockControllerTest {
     @Autowired
     private ObjectMapper mapper;
 
-    private CategoryReqDTO categoryReqDTO;
-
-    @BeforeEach
-    void init() {
-        categoryReqDTO = CategoryReqDTO.builder().name("Test name").description("Test valid desc").build();
-    }
+    private String categoryString;
 
     @Test
     void testCorrectCreationOfCategory() throws Exception {
-        String categoryString = mapper.writeValueAsString(categoryReqDTO);
-
+        categoryString = mapper.writeValueAsString(CategoryReqDTO.builder().name("Test name").description("Descc").build());
         ResultActions res = sentPostToCreateCategory(categoryString);
 
         res.andExpect(status().isCreated());
     }
 
     @Test
-    void testNotValidFields() throws Exception {
-        String categoryString = mapper.writeValueAsString(CategoryReqDTO.builder().name(null).description("").build());
+    void testAlreadyExistedCategory() throws Exception {
+        categoryString = mapper.writeValueAsString(CategoryReqDTO.builder().name("Test name").description("Descc").build());
+        sentPostToCreateCategory(categoryString);
 
         ResultActions res = sentPostToCreateCategory(categoryString);
 
+        res.andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value("Category already exists"))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    void testNotValidNullFields() throws Exception {
+        categoryString = mapper.writeValueAsString(CategoryReqDTO.builder().name(null).description(null).build());
+        ResultActions res = sentPostToCreateCategory(categoryString);
+
         res.andExpect(jsonPath("$.message").value("Request has field validation errors"))
+                .andExpect(jsonPath("$.fieldErrors.description").value("must not be null"))
+                .andExpect(jsonPath("$.fieldErrors.name").value("must not be null"))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    void testNotValidBlankFields() throws Exception {
+        categoryString = mapper.writeValueAsString(CategoryReqDTO.builder().name("   ").description("   ").build());
+        ResultActions res = sentPostToCreateCategory(categoryString);
+
+        res.andExpect(jsonPath("$.message").value("Request has field validation errors"))
+                .andExpect(jsonPath("$.fieldErrors.description").value("must not be blank"))
+                .andExpect(jsonPath("$.fieldErrors.name").value("must not be blank"))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testNotValidLengthFields() throws Exception {
+        categoryString = mapper.writeValueAsString(CategoryReqDTO.builder()
+                .name("l".repeat(51))
+                .description("k".repeat(91))
+                .build());
+        ResultActions res = sentPostToCreateCategory(categoryString);
+
+        res.andExpect(jsonPath("$.message").value("Request has field validation errors"))
+                .andExpect(jsonPath("$.fieldErrors.description").value("size must be between 3 and 90"))
+                .andExpect(jsonPath("$.fieldErrors.name").value("size must be between 3 and 50"))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
 
     private ResultActions sentPostToCreateCategory(String dto) throws Exception {
         return mockMvc.perform(MockMvcRequestBuilders.post("/stock/categories")

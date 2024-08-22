@@ -14,11 +14,11 @@ public class CategoryReqDTO {
 
     @NotNull
     @NotBlank
-    @Size(max = 50)
+    @Size(max = 50, min = 3)
     private String name;
 
     @NotNull
     @NotBlank
-    @Size(max = 90)
+    @Size(max = 90, min = 3)
     private String description;
 }
