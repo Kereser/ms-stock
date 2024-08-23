@@ -5,7 +5,9 @@ import com.emazon.ms_stock.domain.api.ICategoryServicePort;
 import com.emazon.ms_stock.domain.model.Category;
 import com.emazon.ms_stock.domain.spi.ICategoryPersistencePort;
 import com.emazon.ms_stock.infra.exception.CategoryAlreadyExists;
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.Optional;
 
 public class CategoryUseCase implements ICategoryServicePort {
@@ -18,7 +20,7 @@ public class CategoryUseCase implements ICategoryServicePort {
 
     @Override
     public void save(Category category) {
-        Optional<Category> optCategory = persistencePort.getByName(category.getName());
+        Optional<Category> optCategory = persistencePort.findByName(category.getName());
 
         if (optCategory.isPresent()) {
             throw new CategoryAlreadyExists();
@@ -38,12 +40,12 @@ public class CategoryUseCase implements ICategoryServicePort {
     }
 
     @Override
-    public List<Category> getAll() {
-        return persistencePort.getAll();
+    public Page<Category> findAll(Pageable pageable) {
+        return persistencePort.findAll(pageable);
     }
 
     @Override
-    public Category get(Long id) {
-        return persistencePort.get(id);
+    public Category findById(Long id) {
+        return persistencePort.findById(id);
     }
 }
