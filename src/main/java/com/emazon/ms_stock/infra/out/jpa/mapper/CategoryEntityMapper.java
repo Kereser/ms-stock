@@ -1,6 +1,7 @@
 package com.emazon.ms_stock.infra.out.jpa.mapper;
 
 import com.emazon.ms_stock.application.dto.CategoryResDTO;
+import com.emazon.ms_stock.application.dto.PageDTO;
 import com.emazon.ms_stock.domain.model.Category;
 import com.emazon.ms_stock.infra.out.jpa.entity.CategoryEntity;
 import org.mapstruct.Mapper;
@@ -31,4 +32,6 @@ public interface CategoryEntityMapper {
         List<CategoryResDTO> dtoList = toCategoryResDTOList(categoryList.getContent());
         return new PageImpl<>(dtoList, categoryList.getPageable(), categoryList.getTotalElements());
     }
+
+    PageDTO<CategoryResDTO> toPageDTO(Page<Category> categories);
 }

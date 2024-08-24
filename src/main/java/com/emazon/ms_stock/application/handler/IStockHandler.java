@@ -2,9 +2,9 @@ package com.emazon.ms_stock.application.handler;
 
 import com.emazon.ms_stock.application.dto.CategoryReqDTO;
 import com.emazon.ms_stock.application.dto.CategoryResDTO;
-import org.springframework.data.domain.Page;
+import com.emazon.ms_stock.application.dto.PageDTO;
 
 public interface IStockHandler {
     void saveCategoryInStock(CategoryReqDTO reqDTO);
-    Page<CategoryResDTO> getAllCategories(String order, Integer pageSize, Integer page);
+    PageDTO<CategoryResDTO> getAllCategories(String order, Integer pageSize, Integer page);
 }
