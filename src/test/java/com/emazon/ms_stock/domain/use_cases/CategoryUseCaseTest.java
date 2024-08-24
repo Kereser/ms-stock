@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.Optional;
 
@@ -35,19 +36,27 @@ class CategoryUseCaseTest {
     @Test
     @DisplayName(value = "Throws an exception when a category with the same name is already saved.")
     void testExceptionWhenCategoryAlreadyExists() {
-        Mockito.when(iCategoryPersistencePort.getByName(Mockito.anyString())).thenReturn(Optional.of(category));
+        Mockito.when(iCategoryPersistencePort.findByName(Mockito.anyString())).thenReturn(Optional.of(category));
 
         assertThrows(CategoryAlreadyExists.class, () -> categoryUseCase.save(category));
     }
 
     @Test
-    @DisplayName(value = "Test valid insertion of category")
+    @DisplayName(value = "Test valid insertion of category.")
     void testValidSave() {
-        Mockito.when(iCategoryPersistencePort.getByName(Mockito.anyString())).thenReturn(Optional.empty());
+        Mockito.when(iCategoryPersistencePort.findByName(Mockito.anyString())).thenReturn(Optional.empty());
 
         Category cat = new Category("Not same name", "daffsaf");
         categoryUseCase.save(cat);
 
-        Mockito.verify(iCategoryPersistencePort, Mockito.times(1)).getByName(cat.getName());
+        Mockito.verify(iCategoryPersistencePort, Mockito.times(1)).findByName(cat.getName());
+    }
+
+    @Test
+    @DisplayName(value = "Test valid calls to persistence port when getting all categories.")
+    void testGetAllSavedCategories() {
+        categoryUseCase.findAll(PageRequest.of(0, 20));
+
+        Mockito.verify(iCategoryPersistencePort, Mockito.times(1)).findAll(Mockito.any());
     }
 }
