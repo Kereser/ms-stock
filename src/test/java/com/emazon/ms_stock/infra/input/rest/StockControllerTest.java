@@ -95,7 +95,8 @@ class StockControllerTest {
 
         ResultActions res = mockMvc.perform(MockMvcRequestBuilders.get(BASIC_URL));
 
-        res.andExpect(jsonPath("$.totalElements").value(1))
+        res.andExpect(jsonPath("$", Matchers.aMapWithSize(4)))
+                .andExpect(jsonPath("$.totalElements").value(1))
                 .andExpect(jsonPath("$.totalPages").value(1))
                 .andExpect(jsonPath("$.pageable.pageSize").value(20));
     }
