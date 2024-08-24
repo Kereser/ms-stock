@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.Optional;
 
@@ -41,7 +42,7 @@ class CategoryUseCaseTest {
     }
 
     @Test
-    @DisplayName(value = "Test valid insertion of category")
+    @DisplayName(value = "Test valid insertion of category.")
     void testValidSave() {
         Mockito.when(iCategoryPersistencePort.findByName(Mockito.anyString())).thenReturn(Optional.empty());
 
@@ -49,5 +50,13 @@ class CategoryUseCaseTest {
         categoryUseCase.save(cat);
 
         Mockito.verify(iCategoryPersistencePort, Mockito.times(1)).findByName(cat.getName());
+    }
+
+    @Test
+    @DisplayName(value = "Test valid calls to persistence port when getting all categories.")
+    void testGetAllSavedCategories() {
+        categoryUseCase.findAll(PageRequest.of(0, 20));
+
+        Mockito.verify(iCategoryPersistencePort, Mockito.times(1)).findAll(Mockito.any());
     }
 }
