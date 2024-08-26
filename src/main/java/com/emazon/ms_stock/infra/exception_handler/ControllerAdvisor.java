@@ -1,6 +1,7 @@
 package com.emazon.ms_stock.infra.exception_handler;
 
 import com.emazon.ms_stock.infra.exception.BaseEntityException;
+import com.emazon.ms_stock.infra.exception.BrandAlreadyExists;
 import com.emazon.ms_stock.infra.exception.CategoryAlreadyExists;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,7 @@ import java.util.Map;
 public class ControllerAdvisor {
     private ExceptionResponse res;
 
-    @ExceptionHandler(CategoryAlreadyExists.class)
+    @ExceptionHandler({CategoryAlreadyExists.class, BrandAlreadyExists.class})
     public ResponseEntity<ExceptionResponse> handleEntityAlreadyExists(BaseEntityException exception) {
         String msg = exception.getEntityName() + " already exists";
         res = ExceptionResponse.builder()

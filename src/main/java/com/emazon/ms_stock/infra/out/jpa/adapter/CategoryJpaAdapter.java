@@ -24,10 +24,7 @@ public class CategoryJpaAdapter implements ICategoryPersistencePort {
 
     @Override
     public void update(Category category) {
-        CategoryEntity categoryEntity = new CategoryEntity();
-
-        categoryEntity.setName(category.getName());
-        categoryEntity.setDescription(category.getDescription());
+        CategoryEntity categoryEntity = categoryEntityMapper.toEntity(category);
 
         categoryJpaRepository.save(categoryEntity);
     }
@@ -38,7 +35,7 @@ public class CategoryJpaAdapter implements ICategoryPersistencePort {
     }
 
     @Override
-    public Page<Category> findAll(Pageable pageable) {
+    public Page<Category> findAllPageable(Pageable pageable) {
         return categoryEntityMapper.toCategoryPage(categoryJpaRepository.findAll(pageable));
     }
 
@@ -51,11 +48,6 @@ public class CategoryJpaAdapter implements ICategoryPersistencePort {
     public Optional<Category> findByName(String name) {
         Optional<CategoryEntity> optCategory = categoryJpaRepository.findByName(name);
 
-        if (optCategory.isEmpty()) {
-            return Optional.empty();
-        }
-
-        CategoryEntity entity = optCategory.get();
-        return Optional.of(categoryEntityMapper.toCategory(entity));
+        return optCategory.map(categoryEntityMapper::toCategory);
     }
 }

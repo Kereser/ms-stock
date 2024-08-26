@@ -40,8 +40,8 @@ public class CategoryUseCase implements ICategoryServicePort {
     }
 
     @Override
-    public Page<Category> findAll(Pageable pageable) {
-        return persistencePort.findAll(pageable);
+    public Page<Category> findAllPageable(Pageable pageable) {
+        return persistencePort.findAllPageable(pageable);
     }
 
     @Override
