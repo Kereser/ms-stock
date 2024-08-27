@@ -1,12 +1,14 @@
 package com.emazon.ms_stock.infra.out.jpa.mapper;
 
 import com.emazon.ms_stock.application.dto.BrandReqDTO;
+import com.emazon.ms_stock.application.dto.BrandResDTO;
+import com.emazon.ms_stock.application.dto.PageDTO;
 import com.emazon.ms_stock.domain.model.Brand;
 import com.emazon.ms_stock.infra.out.jpa.entity.BrandEntity;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 @Mapper(componentModel = "spring",
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
@@ -15,6 +17,9 @@ public interface BrandEntityMapper {
     Brand toBrand(BrandEntity entity);
     Brand toBrand(BrandReqDTO dto);
     BrandEntity toEntity(Brand brand);
-    List<Brand> toBrandList(List<BrandEntity> entityList);
-    List<BrandEntity> toEntityList(List<Brand> brandList);
+
+    @Mapping(source = "number", target = "currentPage")
+    PageDTO<BrandEntity> toEntityPage(Page<BrandEntity> entityPages);
+    PageDTO<Brand> toBrandPage(PageDTO<BrandEntity> entityPages);
+    PageDTO<BrandResDTO> toBrandResPage(PageDTO<Brand> brandPages);
 }
