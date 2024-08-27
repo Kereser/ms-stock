@@ -3,6 +3,7 @@ package com.emazon.ms_stock.infra.exception_handler;
 import com.emazon.ms_stock.infra.exception.BaseEntityException;
 import com.emazon.ms_stock.infra.exception.BrandAlreadyExists;
 import com.emazon.ms_stock.infra.exception.CategoryAlreadyExists;
+import com.emazon.ms_stock.infra.exception.InvalidRequestParam;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -38,5 +39,10 @@ public class ControllerAdvisor {
                 .build();
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+    }
+
+    @ExceptionHandler(InvalidRequestParam.class)
+    public ResponseEntity<ExceptionResponse> handleInvalidRequestParam(InvalidRequestParam ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ExceptionResponse.builder().message(ex.getMessage()).build());
     }
 }
