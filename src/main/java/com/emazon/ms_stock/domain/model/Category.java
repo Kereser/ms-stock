@@ -5,6 +5,16 @@ public class Category {
     private String name;
     private String description;
 
+    public enum SortBy {
+        NAME("name");
+
+        private String value;
+
+        SortBy(String value) {
+            this.value = value;
+        }
+    }
+
     public Category() {
     }
 
