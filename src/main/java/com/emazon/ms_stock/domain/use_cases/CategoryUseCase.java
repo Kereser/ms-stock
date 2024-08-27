@@ -1,12 +1,12 @@
 package com.emazon.ms_stock.domain.use_cases;
 
 
+import com.emazon.ms_stock.application.dto.PageDTO;
+import com.emazon.ms_stock.application.dto.PageHandler;
 import com.emazon.ms_stock.domain.api.ICategoryServicePort;
 import com.emazon.ms_stock.domain.model.Category;
 import com.emazon.ms_stock.domain.spi.ICategoryPersistencePort;
 import com.emazon.ms_stock.infra.exception.CategoryAlreadyExists;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 
@@ -40,8 +40,8 @@ public class CategoryUseCase implements ICategoryServicePort {
     }
 
     @Override
-    public Page<Category> findAllPageable(Pageable pageable) {
-        return persistencePort.findAllPageable(pageable);
+    public PageDTO<Category> findAllPageable(PageHandler page) {
+        return persistencePort.findAllPageable(page);
     }
 
     @Override
