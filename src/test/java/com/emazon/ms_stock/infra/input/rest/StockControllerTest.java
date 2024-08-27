@@ -55,42 +55,20 @@ class StockControllerTest {
     }
 
     @Test
-    void Should_GetFieldErrors_When_NullFieldsInPayload() throws Exception {
+    void Should_ThrowsException_When_InvalidCategoryPayload() throws Exception {
         categoryJSON = mapper.writeValueAsString(CategoryReqDTO.builder().name(null).description(null).build());
 
-        sentPostToCreateEntity(categoryJSON, BASIC_CATEGORIES_URL)
-                .andExpect(jsonPath("$.message").value("Request has field validation errors"))
-                .andExpect(jsonPath("$.fieldErrors").isMap())
-                .andExpect(jsonPath("$.fieldErrors", Matchers.aMapWithSize(2)))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-    }
+        ResultActions res = sentPostToCreateEntity(categoryJSON, BASIC_CATEGORIES_URL);
+        assertFieldErrors(res, 2);
+        res.andExpect(jsonPath("$.fieldErrors.name").value("must not be blank"))
+                .andExpect(jsonPath("$.fieldErrors.description").value("must not be blank"));
 
-    @Test
-    void Should_GetFieldErrors_When_BlankFieldsInPayload() throws Exception {
-        categoryJSON = mapper.writeValueAsString(CategoryReqDTO.builder().name("   ").description("   ").build());
+        categoryJSON = mapper.writeValueAsString(CategoryReqDTO.builder().name("l".repeat(51)).description("k".repeat(91)).build());
 
-        sentPostToCreateEntity(categoryJSON, BASIC_CATEGORIES_URL)
-                .andExpect(jsonPath("$.message").value("Request has field validation errors"))
-                .andExpect(jsonPath("$.fieldErrors.description").value("must not be blank"))
-                .andExpect(jsonPath("$.fieldErrors.name").value("must not be blank"))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void Should_GetFieldErrors_When_InvalidLengthFieldsInPayload() throws Exception {
-        categoryJSON = mapper.writeValueAsString(CategoryReqDTO.builder()
-                .name("l".repeat(51))
-                .description("k".repeat(91))
-                .build());
-
-        sentPostToCreateEntity(categoryJSON, BASIC_CATEGORIES_URL)
-                .andExpect(jsonPath("$.message").value("Request has field validation errors"))
-                .andExpect(jsonPath("$.fieldErrors.description").value("size must be between 3 and 90"))
-                .andExpect(jsonPath("$.fieldErrors.name").value("size must be between 3 and 50"))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+        res = sentPostToCreateEntity(categoryJSON, BASIC_CATEGORIES_URL);
+        assertFieldErrors(res, 2);
+        res.andExpect(jsonPath("$.fieldErrors.name").value("size must be between 3 and 50"))
+                .andExpect(jsonPath("$.fieldErrors.description").value("size must be between 3 and 90"));
     }
 
     @Test
@@ -98,17 +76,7 @@ class StockControllerTest {
         categoryJSON = mapper.writeValueAsString(CategoryReqDTO.builder().name(validCategoryName).description(validCategoryDescription).build());
         sentPostToCreateEntity(categoryJSON, BASIC_CATEGORIES_URL);
 
-        mockMvc.perform(MockMvcRequestBuilders.get(BASIC_CATEGORIES_URL))
-                .andExpect(jsonPath("$", Matchers.aMapWithSize(4)))
-                .andExpect(jsonPath("$.totalElements").value(1))
-                .andExpect(jsonPath("$.totalPages").value(1))
-                .andExpect(jsonPath("$.pageable.pageSize").value(20));
-    }
-
-    private ResultActions sentPostToCreateEntity(String dto, String url) throws Exception {
-        return mockMvc.perform(MockMvcRequestBuilders.post(url)
-                .content(dto)
-                .contentType(MediaType.APPLICATION_JSON));
+        assertValidPageDTOFormResponseFromResult(mockMvc.perform(MockMvcRequestBuilders.get(BASIC_CATEGORIES_URL)));
     }
 
     /*
@@ -131,5 +99,51 @@ class StockControllerTest {
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.message").value("Brand already exists"))
                 .andExpect(jsonPath("$.fieldErrors.name").value("must be unique"));
+    }
+
+    @Test
+    void Should_ThrowsException_When_InvalidBrandPayload() throws Exception {
+        brandJSON = mapper.writeValueAsString(BrandReqDTO.builder().name(null).description(null).build());
+
+        ResultActions res = sentPostToCreateEntity(brandJSON, BASIC_BRAND_URL);
+        assertFieldErrors(res, 2);
+        res.andExpect(jsonPath("$.fieldErrors.name").value("must not be blank"))
+                .andExpect(jsonPath("$.fieldErrors.description").value("must not be blank"));
+
+        brandJSON = mapper.writeValueAsString(BrandReqDTO.builder().name("d").description("f").build());
+        res = sentPostToCreateEntity(brandJSON, BASIC_BRAND_URL);
+        assertFieldErrors(res, 2);
+        res.andExpect(jsonPath("$.fieldErrors.name").value("size must be between 3 and 50"))
+                .andExpect(jsonPath("$.fieldErrors.description").value("size must be between 3 and 120"));
+    }
+
+    @Test
+    void Should_GetCorrectObjectFromPageResponse_When_GetAllBrandPageable() throws Exception {
+        brandJSON = mapper.writeValueAsString(BrandReqDTO.builder().name("Test").description("Test2").build());
+        sentPostToCreateEntity(brandJSON, BASIC_BRAND_URL);
+
+        assertValidPageDTOFormResponseFromResult(mockMvc.perform(MockMvcRequestBuilders.get(BASIC_BRAND_URL)));
+    }
+
+    private void assertFieldErrors(ResultActions res, Integer numberOfFields) throws Exception {
+        res.andExpect(jsonPath("$.message").value("Request has field validation errors"))
+                .andExpect(jsonPath("$.fieldErrors").isMap())
+                .andExpect(jsonPath("$.fieldErrors", Matchers.aMapWithSize(numberOfFields)))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    private void assertValidPageDTOFormResponseFromResult(ResultActions res) throws Exception {
+        res.andExpect(jsonPath("$", Matchers.aMapWithSize(9)))
+                .andExpect(jsonPath("$.totalElements").value(1))
+                .andExpect(jsonPath("$.totalPages").value(1))
+                .andExpect(jsonPath("$.pageable.pageSize").value(20))
+                .andExpect(jsonPath("$.currentPage").value(0));
+    }
+
+    private ResultActions sentPostToCreateEntity(String dto, String url) throws Exception {
+        return mockMvc.perform(MockMvcRequestBuilders.post(url)
+                .content(dto)
+                .contentType(MediaType.APPLICATION_JSON));
     }
 }
