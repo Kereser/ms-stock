@@ -1,5 +1,8 @@
 package com.emazon.ms_stock.infra.out.jpa.adapter;
 
+import com.emazon.ms_stock.application.dto.PageDTO;
+import com.emazon.ms_stock.application.dto.PageHandler;
+import com.emazon.ms_stock.application.utils.ParsingUtils;
 import com.emazon.ms_stock.domain.model.Brand;
 import com.emazon.ms_stock.domain.spi.IBrandPersistencePort;
 import com.emazon.ms_stock.infra.out.jpa.entity.BrandEntity;
@@ -7,8 +10,6 @@ import com.emazon.ms_stock.infra.out.jpa.mapper.BrandEntityMapper;
 import com.emazon.ms_stock.infra.out.jpa.repository.BrandJpaRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 
@@ -34,8 +35,10 @@ public class BrandJpaAdapter implements IBrandPersistencePort {
     }
 
     @Override
-    public Page<Brand> findAllPageable(Pageable pageable) {
-        return null;
+    public PageDTO<Brand> findAllPageable(PageHandler page) {
+        PageDTO<BrandEntity> brandPages = brandEntityMapper.toEntityPage(brandJpaRepository.findAll(ParsingUtils.toPageable(page)));
+
+        return brandEntityMapper.toBrandPage(brandPages);
     }
 
     @Override

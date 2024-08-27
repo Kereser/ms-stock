@@ -1,9 +1,6 @@
 package com.emazon.ms_stock.infra.input.rest;
 
-import com.emazon.ms_stock.application.dto.BrandReqDTO;
-import com.emazon.ms_stock.application.dto.CategoryReqDTO;
-import com.emazon.ms_stock.application.dto.CategoryResDTO;
-import com.emazon.ms_stock.application.dto.PageDTO;
+import com.emazon.ms_stock.application.dto.*;
 import com.emazon.ms_stock.application.handler.IStockHandler;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,15 +23,25 @@ public class StockController {
 
     @GetMapping("/categories")
     public ResponseEntity<PageDTO<CategoryResDTO>> getAllCategories(
-            @RequestParam(defaultValue = "desc") String direction,
+            @RequestParam(defaultValue = "asc") String direction,
             @RequestParam(defaultValue = "20") Integer pageSize,
-            @RequestParam(defaultValue = "0") Integer page) {
-        return ResponseEntity.ok().body(stockHandler.getAllCategories(direction, pageSize, page));
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "name") String column) {
+        return ResponseEntity.ok().body(stockHandler.getAllCategories(direction, pageSize, page, column));
     }
 
     @PostMapping("/brands")
     public ResponseEntity<Void> createBrand(@RequestBody @Valid BrandReqDTO dto) {
         stockHandler.createBrandInStock(dto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @GetMapping("/brands")
+    public ResponseEntity<PageDTO<BrandResDTO>> getAllBrandsPaged(
+            @RequestParam(defaultValue = "asc") String direction,
+            @RequestParam(defaultValue = "20") Integer pageSize,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "name") String column) {
+        return ResponseEntity.ok().body(stockHandler.getAllBrands(direction, pageSize, page, column));
     }
 }

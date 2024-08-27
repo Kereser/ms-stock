@@ -1,5 +1,6 @@
 package com.emazon.ms_stock.domain.use_cases;
 
+import com.emazon.ms_stock.application.dto.PageHandler;
 import com.emazon.ms_stock.domain.model.Brand;
 import com.emazon.ms_stock.domain.spi.IBrandPersistencePort;
 import com.emazon.ms_stock.infra.exception.BrandAlreadyExists;
@@ -38,5 +39,12 @@ class BrandUseCaseTest {
         Mockito.when(persistencePort.findByName(Mockito.anyString())).thenReturn(Optional.of(brand));
 
         assertThrows(BrandAlreadyExists.class, () -> servicePort.save(brand));
+    }
+
+    @Test
+    void Should_InteractWithPersistencePortOneTimeOnly_When_ValidRequest() {
+        servicePort.findAllPageable(PageHandler.builder().page(0).pageSize(20).build());
+
+        Mockito.verify(persistencePort, Mockito.times(1)).findAllPageable(Mockito.any());
     }
 }

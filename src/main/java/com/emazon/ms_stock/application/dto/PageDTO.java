@@ -10,16 +10,22 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class PageDTO<T> {
-    private int totalElements;
-    private int totalPages;
+    private Integer totalElements;
+    private Integer totalPages;
     private Pageable pageable;
+    private Integer numberOfElements;
+    private Integer currentPage;
+    private Integer size;
+    private Boolean first;
+    private Boolean last;
     private List<T> content;
 
     @Getter
     @Setter
     @NoArgsConstructor
     public static class Pageable {
-        private int pageNumber;
-        private int pageSize;
+        private Integer pageNumber;
+        private Integer pageSize;
+        private Integer offset;
     }
 }

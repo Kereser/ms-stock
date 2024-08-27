@@ -1,19 +1,15 @@
 package com.emazon.ms_stock.application.handler;
 
-import com.emazon.ms_stock.application.dto.BrandReqDTO;
-import com.emazon.ms_stock.application.dto.CategoryReqDTO;
-import com.emazon.ms_stock.application.dto.CategoryResDTO;
-import com.emazon.ms_stock.application.dto.PageDTO;
+import com.emazon.ms_stock.application.dto.*;
 import com.emazon.ms_stock.domain.api.IBrandServicePort;
 import com.emazon.ms_stock.domain.api.ICategoryServicePort;
 import com.emazon.ms_stock.domain.model.Brand;
 import com.emazon.ms_stock.domain.model.Category;
+import com.emazon.ms_stock.infra.exception.InvalidRequestParam;
 import com.emazon.ms_stock.infra.out.jpa.mapper.BrandEntityMapper;
 import com.emazon.ms_stock.infra.out.jpa.mapper.CategoryEntityMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -36,16 +32,33 @@ public class StockHandler implements IStockHandler {
     }
 
     @Override
-    public PageDTO<CategoryResDTO> getAllCategories(String direction, Integer pageSize, Integer pageNumber) {
-        Sort sort = direction.equalsIgnoreCase("desc") ? Sort.by("name").descending() : Sort.by("name").ascending();
-        Page<Category> categoryPage = categoryServicePort.findAllPageable(PageRequest.of(pageNumber, pageSize, sort));
-
-        return categoryEntityMapper.toPageDTO(categoryPage);
+    public PageDTO<CategoryResDTO> getAllCategories(String direction, Integer pageSize, Integer page, String column) {
+        try {
+            Category.SortBy.valueOf(column.toUpperCase());
+            Sort.Direction.valueOf(direction.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new InvalidRequestParam("Invalid request param. Please review the api documentation to check for valid values");
+        }
+        PageDTO<Category> categoryPages = categoryServicePort.findAllPageable(new PageHandler(pageSize, page, direction, column));
+        return categoryEntityMapper.toCategoryRes(categoryPages);
     }
 
     @Override
     public void createBrandInStock(BrandReqDTO dto) {
         Brand brand = brandEntityMapper.toBrand(dto);
         brandServicePort.save(brand);
+    }
+
+    @Override
+    public PageDTO<BrandResDTO> getAllBrands(String direction, Integer pageSize, Integer page, String column) {
+        try {
+            Brand.SortBy.valueOf(column.toUpperCase());
+            Sort.Direction.valueOf(direction.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new InvalidRequestParam("Invalid request param. Please review the api documentation to check for valid values");
+        }
+        PageHandler pageHandler = new PageHandler(pageSize, page, direction, column);
+        PageDTO<Brand> brandPagesDTO = brandServicePort.findAllPageable(pageHandler);
+        return brandEntityMapper.toBrandResPage(brandPagesDTO);
     }
 }

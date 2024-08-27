@@ -1,5 +1,6 @@
 package com.emazon.ms_stock.domain.use_cases;
 
+import com.emazon.ms_stock.application.dto.PageHandler;
 import com.emazon.ms_stock.domain.model.Category;
 import com.emazon.ms_stock.domain.spi.ICategoryPersistencePort;
 import com.emazon.ms_stock.infra.exception.CategoryAlreadyExists;
@@ -10,7 +11,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.PageRequest;
 
 import java.util.Optional;
 
@@ -48,8 +48,8 @@ class CategoryUseCaseTest {
 
     @Test
     @DisplayName(value = "Test valid calls to persistence port when getting all categories.")
-    void Should_GetAllCategoriesPageable_When_ValidPageRequest() {
-        categoryUseCase.findAllPageable(PageRequest.of(0, 20));
+    void Should_InteractWithPersistencePortOneTimeOnly_When_ValidPageRequest() {
+        categoryUseCase.findAllPageable(PageHandler.builder().pageSize(20).page(0).build());
 
         Mockito.verify(iCategoryPersistencePort, Mockito.times(1)).findAllPageable(Mockito.any());
     }

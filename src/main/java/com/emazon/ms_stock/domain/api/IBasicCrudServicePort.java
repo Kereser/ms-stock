@@ -1,11 +1,11 @@
 package com.emazon.ms_stock.domain.api;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import com.emazon.ms_stock.application.dto.PageDTO;
+import com.emazon.ms_stock.application.dto.PageHandler;
 
 public interface IBasicCrudServicePort<T> {
     void save(T entity);
     void update(T entity);
     void delete(Long id);
-    Page<T> findAllPageable(Pageable pageable);
+    PageDTO<T> findAllPageable(PageHandler pageable);
 }
