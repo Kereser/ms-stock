@@ -5,6 +5,22 @@ public class Brand {
     private String name;
     private String description;
 
+
+    public enum SortBy {
+        NAME("name"),
+        DESCRIPTION("description");
+
+        private final String value;
+
+        SortBy(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
+
     public Brand(String name, String description) {
         this.name = name;
         this.description = description;
