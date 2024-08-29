@@ -10,6 +10,7 @@ import com.emazon.ms_stock.infra.out.jpa.mapper.CategoryEntityMapper;
 import com.emazon.ms_stock.infra.out.jpa.repository.CategoryJpaRepository;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -42,8 +43,8 @@ public class CategoryJpaAdapter implements ICategoryPersistencePort {
     }
 
     @Override
-    public Category findById(Long id) {
-        return null;
+    public Optional<Category> findById(Long id) {
+        return Optional.empty();
     }
 
     @Override
@@ -51,5 +52,14 @@ public class CategoryJpaAdapter implements ICategoryPersistencePort {
         Optional<CategoryEntity> optCategory = categoryJpaRepository.findByName(name);
 
         return optCategory.map(categoryEntityMapper::toCategory);
+    }
+
+    @Override
+    public List<Category> findAllById(Iterable<Long> ids) {
+        return categoryEntityMapper.toCategoryList(categoryJpaRepository.findAllById(ids));
+    }
+
+    public List<Category> findAll() {
+        return categoryEntityMapper.toCategoryList(categoryJpaRepository.findAll());
     }
 }

@@ -45,7 +45,7 @@ public class CategoryUseCase implements ICategoryServicePort {
     }
 
     @Override
-    public Category findById(Long id) {
+    public Optional<Category> findById(Long id) {
         return persistencePort.findById(id);
     }
 }

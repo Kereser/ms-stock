@@ -21,6 +21,9 @@ public class Brand {
         }
     }
 
+    public Brand() {
+    }
+
     public Brand(String name, String description) {
         this.name = name;
         this.description = description;
