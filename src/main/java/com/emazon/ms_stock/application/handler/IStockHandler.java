@@ -8,4 +8,6 @@ public interface IStockHandler {
 
     void createBrandInStock(BrandReqDTO dto);
     PageDTO<BrandResDTO> getAllBrands(String direction, Integer pageSize, Integer page, String column);
+
+    void createArticleInStock(ArticleReqDTO dto);
 }

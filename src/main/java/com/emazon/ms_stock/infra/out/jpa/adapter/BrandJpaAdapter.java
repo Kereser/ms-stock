@@ -8,7 +8,6 @@ import com.emazon.ms_stock.domain.spi.IBrandPersistencePort;
 import com.emazon.ms_stock.infra.out.jpa.entity.BrandEntity;
 import com.emazon.ms_stock.infra.out.jpa.mapper.BrandEntityMapper;
 import com.emazon.ms_stock.infra.out.jpa.repository.BrandJpaRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Optional;
@@ -42,12 +41,10 @@ public class BrandJpaAdapter implements IBrandPersistencePort {
     }
 
     @Override
-    public Brand findById(Long id) {
+    public Optional<Brand> findById(Long id) {
         Optional<BrandEntity> opt = brandJpaRepository.findById(id);
 
-        if (opt.isEmpty()) throw new EntityNotFoundException();
-
-        return brandEntityMapper.toBrand(opt.get());
+        return opt.map(brandEntityMapper::toBrand);
     }
 
     @Override

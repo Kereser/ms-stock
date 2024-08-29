@@ -1,10 +1,9 @@
 package com.emazon.ms_stock.infra.out.jpa.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -18,4 +17,6 @@ public class BrandEntity {
     private Long id;
     private String name;
     private String description;
+    @OneToMany(mappedBy = "brand")
+    private List<ArticleEntity> article;
 }

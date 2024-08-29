@@ -18,6 +18,16 @@ public interface BrandEntityMapper {
     Brand toBrand(BrandReqDTO dto);
     BrandEntity toEntity(Brand brand);
 
+    default Brand toBrandFromId(Long id) {
+        if (id == null) {
+            return null;
+        }
+
+        Brand br = new Brand();
+        br.setId(id);
+        return br;
+    }
+
     @Mapping(source = "number", target = "currentPage")
     PageDTO<BrandEntity> toEntityPage(Page<BrandEntity> entityPages);
     PageDTO<Brand> toBrandPage(PageDTO<BrandEntity> entityPages);

@@ -1,10 +1,9 @@
 package com.emazon.ms_stock.infra.out.jpa.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.Set;
 
 @Getter
 @Setter
@@ -18,4 +17,14 @@ public class CategoryEntity {
     private Long id;
     private String name;
     private String description;
+    @ManyToMany(mappedBy = "categories")
+    private Set<ArticleEntity> articles;
+
+    public void addArticles(Set<ArticleEntity> ar) {
+        articles.addAll(ar);
+    }
+
+    public void removeArticles(Set<ArticleEntity> ar) {
+        articles.removeAll(ar);
+    }
 }
