@@ -1,9 +1,6 @@
 package com.emazon.ms_stock.infra.exception_handler;
 
-import com.emazon.ms_stock.infra.exception.BaseEntityException;
-import com.emazon.ms_stock.infra.exception.BrandAlreadyExists;
-import com.emazon.ms_stock.infra.exception.CategoryAlreadyExists;
-import com.emazon.ms_stock.infra.exception.InvalidRequestParam;
+import com.emazon.ms_stock.infra.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -19,10 +16,10 @@ public class ControllerAdvisor {
 
     @ExceptionHandler({CategoryAlreadyExists.class, BrandAlreadyExists.class})
     public ResponseEntity<ExceptionResponse> handleEntityAlreadyExists(BaseEntityException exception) {
-        String msg = exception.getEntityName() + " already exists";
+        String msg = exception.getEntityName() + ExceptionResponse.ENTITY_ALREADY_EXISTS;
         res = ExceptionResponse.builder()
                 .message(msg)
-                .fieldErrors(Map.of(exception.getField(), "must be unique"))
+                .fieldErrors(Map.of(exception.getField(), ExceptionResponse.UNIQUE_CONSTRAINT_VIOLATION))
                 .build();
         return ResponseEntity.status(HttpStatus.CONFLICT).body(res);
     }
@@ -34,7 +31,7 @@ public class ControllerAdvisor {
         ex.getBindingResult().getFieldErrors().forEach(e -> fieldErrors.put(e.getField(), e.getDefaultMessage()));
 
         res = ExceptionResponse.builder()
-                .message("Request has field validation errors")
+                .message(ExceptionResponse.FIELD_VALIDATION_ERRORS)
                 .fieldErrors(fieldErrors)
                 .build();
 
@@ -44,5 +41,17 @@ public class ControllerAdvisor {
     @ExceptionHandler(InvalidRequestParam.class)
     public ResponseEntity<ExceptionResponse> handleInvalidRequestParam(InvalidRequestParam ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ExceptionResponse.builder().message(ex.getMessage()).build());
+    }
+
+    @ExceptionHandler(NoDataFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleNoDataFound(BaseEntityException ex) {
+        Map<String, Object> errors = new HashMap<>();
+        errors.put(ex.getField(), ExceptionResponse.ID_NOT_FOUND);
+
+        res = ExceptionResponse.builder()
+                .message(String.format("Error processing operation with: %s", ex.getEntityName()))
+                .fieldErrors(errors)
+                .build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
 }
