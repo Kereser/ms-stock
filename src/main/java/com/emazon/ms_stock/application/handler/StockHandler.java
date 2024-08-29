@@ -1,11 +1,13 @@
 package com.emazon.ms_stock.application.handler;
 
 import com.emazon.ms_stock.application.dto.*;
+import com.emazon.ms_stock.domain.api.IArticleServicePort;
 import com.emazon.ms_stock.domain.api.IBrandServicePort;
 import com.emazon.ms_stock.domain.api.ICategoryServicePort;
 import com.emazon.ms_stock.domain.model.Brand;
 import com.emazon.ms_stock.domain.model.Category;
 import com.emazon.ms_stock.infra.exception.InvalidRequestParam;
+import com.emazon.ms_stock.infra.out.jpa.mapper.ArticleEntityMapper;
 import com.emazon.ms_stock.infra.out.jpa.mapper.BrandEntityMapper;
 import com.emazon.ms_stock.infra.out.jpa.mapper.CategoryEntityMapper;
 import jakarta.transaction.Transactional;
@@ -23,6 +25,9 @@ public class StockHandler implements IStockHandler {
 
     private final IBrandServicePort brandServicePort;
     private final BrandEntityMapper brandEntityMapper;
+
+    private final IArticleServicePort articleServicePort;
+    private final ArticleEntityMapper articleEntityMapper;
 
     @Override
     public void saveCategoryInStock(CategoryReqDTO reqDTO) {
@@ -60,5 +65,10 @@ public class StockHandler implements IStockHandler {
         PageHandler pageHandler = new PageHandler(pageSize, page, direction, column);
         PageDTO<Brand> brandPagesDTO = brandServicePort.findAllPageable(pageHandler);
         return brandEntityMapper.toBrandResPage(brandPagesDTO);
+    }
+
+    @Override
+    public void createArticleInStock(ArticleReqDTO dto) {
+        articleServicePort.save(articleEntityMapper.toArticle(dto));
     }
 }

@@ -44,4 +44,10 @@ public class StockController {
             @RequestParam(defaultValue = "name") String column) {
         return ResponseEntity.ok().body(stockHandler.getAllBrands(direction, pageSize, page, column));
     }
+
+    @PostMapping("/articles")
+    public ResponseEntity<Void> createArticle(@RequestBody @Valid ArticleReqDTO articleDTO) {
+        stockHandler.createArticleInStock(articleDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
 }
