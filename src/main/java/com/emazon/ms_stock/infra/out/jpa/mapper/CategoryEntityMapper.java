@@ -17,6 +17,16 @@ import java.util.List;
 public interface CategoryEntityMapper {
     CategoryEntity toEntity(Category category);
 
+    default Category toCategoryFromId(Long id) {
+        if (id == null) {
+            return null;
+        }
+
+        Category cg = new Category();
+        cg.setId(id);
+        return cg;
+    }
+
     Category toCategory(CategoryEntity categoryEntity);
 
     List<Category> toCategoryList(List<CategoryEntity> categoryEntityList);
