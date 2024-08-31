@@ -1,25 +1,13 @@
 package com.emazon.ms_stock.domain.model;
 
+import java.util.List;
+
 public class Brand {
     private Long id;
     private String name;
     private String description;
 
-
-    public enum SortBy {
-        NAME("name"),
-        DESCRIPTION("description");
-
-        private final String value;
-
-        SortBy(String value) {
-            this.value = value;
-        }
-
-        public String getValue() {
-            return value;
-        }
-    }
+    public static final List<String> VALID_SORT_FIELDS = List.of("name", "description");
 
     public Brand() {
     }
@@ -51,5 +39,9 @@ public class Brand {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public static Boolean isValidSortField(String fields) {
+        return VALID_SORT_FIELDS.contains(fields);
     }
 }
