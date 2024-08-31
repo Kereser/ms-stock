@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,13 +44,20 @@ public class ControllerAdvisor {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ExceptionResponse.builder().message(ex.getMessage()).build());
     }
 
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ExceptionResponse> handleNotValidReqParam(MethodArgumentTypeMismatchException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ExceptionResponse.builder()
+                .message(ExceptionResponse.NOT_VALID_PARAM)
+                .fieldErrors(Map.of(ex.getName(), ex.getValue() != null ? ex.getValue() : "")).build());
+    }
+
     @ExceptionHandler(NoDataFoundException.class)
     public ResponseEntity<ExceptionResponse> handleNoDataFound(BaseEntityException ex) {
         Map<String, Object> errors = new HashMap<>();
         errors.put(ex.getField(), ExceptionResponse.ID_NOT_FOUND);
 
         res = ExceptionResponse.builder()
-                .message(String.format("Error processing operation with: %s", ex.getEntityName()))
+                .message(ExceptionResponse.ERROR_PROCESSING_OPERATION + ex.getEntityName())
                 .fieldErrors(errors)
                 .build();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
