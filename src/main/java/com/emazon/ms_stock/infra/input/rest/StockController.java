@@ -2,6 +2,7 @@ package com.emazon.ms_stock.infra.input.rest;
 
 import com.emazon.ms_stock.application.dto.*;
 import com.emazon.ms_stock.application.handler.IStockHandler;
+import com.emazon.ms_stock.infra.SortOrder;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,11 +24,11 @@ public class StockController {
 
     @GetMapping("/categories")
     public ResponseEntity<PageDTO<CategoryResDTO>> getAllCategories(
-            @RequestParam(defaultValue = "asc") String direction,
+            @RequestParam(defaultValue = "ASC") SortOrder direction,
             @RequestParam(defaultValue = "20") Integer pageSize,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "name") String column) {
-        return ResponseEntity.ok().body(stockHandler.getAllCategories(direction, pageSize, page, column));
+        return ResponseEntity.ok().body(stockHandler.getAllCategories(direction.name(), pageSize, page, column));
     }
 
     @PostMapping("/brands")
@@ -38,16 +39,25 @@ public class StockController {
 
     @GetMapping("/brands")
     public ResponseEntity<PageDTO<BrandResDTO>> getAllBrandsPaged(
-            @RequestParam(defaultValue = "asc") String direction,
+            @RequestParam(defaultValue = "ASC") SortOrder direction,
             @RequestParam(defaultValue = "20") Integer pageSize,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "name") String column) {
-        return ResponseEntity.ok().body(stockHandler.getAllBrands(direction, pageSize, page, column));
+        return ResponseEntity.ok().body(stockHandler.getAllBrands(direction.name(), pageSize, page, column));
     }
 
     @PostMapping("/articles")
     public ResponseEntity<Void> createArticle(@RequestBody @Valid ArticleReqDTO articleDTO) {
         stockHandler.createArticleInStock(articleDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @GetMapping("/articles")
+    public ResponseEntity<PageDTO<ArticleResDTO>> getAllArticles(
+            @RequestParam(defaultValue = "ASC") SortOrder direction,
+            @RequestParam(defaultValue = "20") Integer pageSize,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "name") String column) {
+        return ResponseEntity.ok().body(stockHandler.getAllArticles(direction.name(), pageSize, page, column));
     }
 }

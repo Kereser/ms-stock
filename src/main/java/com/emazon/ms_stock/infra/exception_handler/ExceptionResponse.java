@@ -19,6 +19,8 @@ public class ExceptionResponse {
     public static final String ENTITY_ALREADY_EXISTS = " already exists";
     public static final String FIELD_VALIDATION_ERRORS = "Request has field validation errors";
     public static final String ID_NOT_FOUND = "A provided ID could not be found";
+    public static final String NOT_VALID_PARAM = "Not valid request param";
+    public static final String ERROR_PROCESSING_OPERATION = "Error processing operation with: ";
 
     private String message;
     private Map<String, Object> fieldErrors;
