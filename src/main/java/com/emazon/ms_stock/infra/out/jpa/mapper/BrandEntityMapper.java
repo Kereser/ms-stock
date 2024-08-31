@@ -1,7 +1,5 @@
 package com.emazon.ms_stock.infra.out.jpa.mapper;
 
-import com.emazon.ms_stock.application.dto.BrandReqDTO;
-import com.emazon.ms_stock.application.dto.BrandResDTO;
 import com.emazon.ms_stock.application.dto.PageDTO;
 import com.emazon.ms_stock.domain.model.Brand;
 import com.emazon.ms_stock.infra.out.jpa.entity.BrandEntity;
@@ -15,7 +13,6 @@ import org.springframework.data.domain.Page;
         unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public interface BrandEntityMapper {
     Brand toBrand(BrandEntity entity);
-    Brand toBrand(BrandReqDTO dto);
     BrandEntity toEntity(Brand brand);
 
     default Brand toBrandFromId(Long id) {
@@ -30,6 +27,6 @@ public interface BrandEntityMapper {
 
     @Mapping(source = "number", target = "currentPage")
     PageDTO<BrandEntity> toEntityPage(Page<BrandEntity> entityPages);
+
     PageDTO<Brand> toBrandPage(PageDTO<BrandEntity> entityPages);
-    PageDTO<BrandResDTO> toBrandResPage(PageDTO<Brand> brandPages);
 }
