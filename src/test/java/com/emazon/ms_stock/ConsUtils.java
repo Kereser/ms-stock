@@ -23,15 +23,9 @@ public class ConsUtils {
 
     public static final Long LONG_ONE = 1L;
 
-    public static final Integer INT_ZERO = 0;
-
     public static final String PLUS_FIFTY_CHARACTERS = "d".repeat(51);
     public static final String PLUS_NINETY_CHARACTERS = "d".repeat(91);
     public static final String PLUS_TWO_HUNDRED_CHARACTERS = "d".repeat(201);
-
-    public static final String SORT_BY_NAME = "name";
-    public static final Integer STARTER_PAGE = 0;
-    public static final Integer DEFAULT_PAGE_SIZE = 20;
 
     public static final String INVALID_SORT_CRITERIA = "Invalid sort criteria in request param";
     public static final String NON_EXISTING_SORTING_COLUMN = "Non:existing:column";
@@ -39,6 +33,4 @@ public class ConsUtils {
 
     public static final String NON_EXISTING_DIRECTION_COLUMN = "Non:existing:DIRECTION";
     public static final String DIRECTION_PARAM = "direction";
-
-    public static final String ERROR_PROCESSING_OPERATION = "Error processing operation with: ";
 }
