@@ -8,8 +8,8 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PageHandler {
+    private String direction;
     private Integer pageSize;
     private Integer page;
-    private String direction;
     private String column;
 }
