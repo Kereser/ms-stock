@@ -1,5 +1,6 @@
 package com.emazon.ms_stock.domain.use_cases;
 
+import com.emazon.ms_stock.application.dto.PageHandler;
 import com.emazon.ms_stock.domain.model.Article;
 import com.emazon.ms_stock.domain.model.Brand;
 import com.emazon.ms_stock.domain.model.Category;
@@ -14,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Sort;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -62,7 +64,7 @@ class ArticleUseCaseTest {
     }
 
     @Test
-    void Should_SaveArticle_WhenValidPayload() {
+    void Should_SaveArticle_When_ValidPayload() {
         Mockito.when(categoryPersistencePort.findAllById(Mockito.any())).thenReturn(List.of(new Category(TEST_NAME, TEST_DESCRIPTION)));
         Mockito.when(brandPersistencePort.findById(Mockito.any())).thenReturn(Optional.of(new Brand(TEST_NAME, TEST_DESCRIPTION)));
 
@@ -72,6 +74,34 @@ class ArticleUseCaseTest {
         Mockito.verify(brandPersistencePort, Mockito.times(1)).findById(Mockito.any());
         Mockito.verify(articlePersistencePort, Mockito.times(1)).save(ar);
         Assertions.assertEquals(1, ar.getCategories().size());
+    }
+
+    @Test
+    void Should_InteractWithCorrectMethods_DependingOn_ColumnAndDirectionOnPayload() {
+        PageHandler page = getBasicPageAsc(Sort.Direction.ASC);
+        page.setColumn("name");
+        articleUseCase.findAllPageable(page);
+
+        Mockito.verify(articlePersistencePort, Mockito.times(1)).findAllPageable(Mockito.any());
+        Mockito.verify(articlePersistencePort, Mockito.times(0)).findAllByCategoryNameAsc(Mockito.any());
+        Mockito.verify(articlePersistencePort, Mockito.times(0)).findAllByCategoryNameDesc(Mockito.any());
+
+        Mockito.reset(articlePersistencePort);
+        page.setColumn(Article.INNER_SORT_CATEGORY_NAME);
+        articleUseCase.findAllPageable(page);
+
+        Mockito.verify(articlePersistencePort, Mockito.times(1)).findAllByCategoryNameAsc(Mockito.any());
+        Mockito.verify(articlePersistencePort, Mockito.times(0)).findAllPageable(Mockito.any());
+        Mockito.verify(articlePersistencePort, Mockito.times(0)).findAllByCategoryNameDesc(Mockito.any());
+
+        Mockito.reset(articlePersistencePort);
+        page = getBasicPageAsc(Sort.Direction.DESC);
+        page.setColumn(Article.INNER_SORT_CATEGORY_NAME);
+        articleUseCase.findAllPageable(page);
+
+        Mockito.verify(articlePersistencePort, Mockito.times(1)).findAllByCategoryNameDesc(Mockito.any());
+        Mockito.verify(articlePersistencePort, Mockito.times(0)).findAllPageable(Mockito.any());
+        Mockito.verify(articlePersistencePort, Mockito.times(0)).findAllByCategoryNameAsc(Mockito.any());
     }
 
     private Article createBasicArticle() {
@@ -89,5 +119,14 @@ class ArticleUseCaseTest {
         article.setCategories(Set.of(category));
         article.setBrand(brand);
         return article;
+    }
+
+    private PageHandler getBasicPageAsc(Sort.Direction dir) {
+        return PageHandler.builder()
+                .column("")
+                .page(0)
+                .pageSize(20)
+                .direction(dir.toString())
+                .build();
     }
 }

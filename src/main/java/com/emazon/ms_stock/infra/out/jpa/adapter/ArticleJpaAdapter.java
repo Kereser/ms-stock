@@ -2,6 +2,7 @@ package com.emazon.ms_stock.infra.out.jpa.adapter;
 
 import com.emazon.ms_stock.application.dto.PageDTO;
 import com.emazon.ms_stock.application.dto.PageHandler;
+import com.emazon.ms_stock.application.utils.ParsingUtils;
 import com.emazon.ms_stock.domain.model.Article;
 import com.emazon.ms_stock.domain.spi.IArticlePersistencePort;
 import com.emazon.ms_stock.infra.out.jpa.entity.ArticleEntity;
@@ -33,11 +34,6 @@ public class ArticleJpaAdapter implements IArticlePersistencePort {
     }
 
     @Override
-    public PageDTO<Article> findAllPageable(PageHandler page) {
-        return null;
-    }
-
-    @Override
     public Optional<Article> findById(Long id) {
         return Optional.empty();
     }
@@ -47,4 +43,27 @@ public class ArticleJpaAdapter implements IArticlePersistencePort {
         Optional<ArticleEntity> opt = repository.findByName(name);
         return opt.map(mapper::toArticle);
     }
+
+    @Override
+    public PageDTO<Article> findAllPageable(PageHandler page) {
+        PageDTO<ArticleEntity> pageEntity = mapper.toArticleEntityPage(repository.findAll(ParsingUtils.toPageable(page)));
+
+        return mapper.toArticlePage(pageEntity);
+    }
+
+    @Override
+    public PageDTO<Article> findAllByCategoryNameAsc(PageHandler page) {
+        PageDTO<ArticleEntity> pageEntity = mapper.toArticleEntityPage(repository.findAllArticlesOrderByCategoryNameASC(ParsingUtils.toPageableUnsorted(page)));
+
+        return mapper.toArticlePage(pageEntity);
+    }
+
+    @Override
+    public PageDTO<Article> findAllByCategoryNameDesc(PageHandler page) {
+        PageDTO<ArticleEntity> pageEntity = mapper.toArticleEntityPage(repository.findAllArticlesOrderByCategoryNameDESC(ParsingUtils.toPageableUnsorted(page)));
+
+        return mapper.toArticlePage(pageEntity);
+    }
+
+
 }

@@ -11,10 +11,9 @@ import com.emazon.ms_stock.domain.spi.IArticlePersistencePort;
 import com.emazon.ms_stock.domain.spi.IBrandPersistencePort;
 import com.emazon.ms_stock.domain.spi.ICategoryPersistencePort;
 import com.emazon.ms_stock.infra.exception.NoDataFoundException;
+import org.springframework.data.domain.Sort;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class ArticleUseCase implements IArticleServicePort {
 
@@ -32,8 +31,6 @@ public class ArticleUseCase implements IArticleServicePort {
 
     @Override
     public void save(Article entity) {
-
-
         List<Category> categories = categoryPersistencePort.findAllById(entity.getCategories().stream().map(Category::getId).toList());
 
         if (categories.size() < entity.getCategories().size()) {
@@ -54,16 +51,22 @@ public class ArticleUseCase implements IArticleServicePort {
 
     @Override
     public void update(Article entity) {
-
     }
 
     @Override
     public void delete(Long id) {
-
     }
 
     @Override
     public PageDTO<Article> findAllPageable(PageHandler pageable) {
-        return null;
+        if (pageable.getColumn().equalsIgnoreCase(Article.INNER_SORT_CATEGORY_NAME)) {
+            if (pageable.getDirection().equalsIgnoreCase(Sort.Direction.ASC.toString())) {
+                return persistencePort.findAllByCategoryNameAsc(pageable);
+            }
+
+            return persistencePort.findAllByCategoryNameDesc(pageable);
+        }
+
+        return persistencePort.findAllPageable(pageable);
     }
 }

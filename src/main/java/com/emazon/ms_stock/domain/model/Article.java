@@ -1,6 +1,7 @@
 package com.emazon.ms_stock.domain.model;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Set;
 
 public class Article {
@@ -12,21 +13,8 @@ public class Article {
     private Set<Category> categories;
     private Brand brand;
 
-    public enum SortBy {
-        ARTICLE_NAME("articleName"),
-        DESCRIPTION_NAME("descriptionName"),
-        CATEGORY("category");
-
-        private final String value;
-
-        SortBy(String value) {
-            this.value = value;
-        }
-
-        public String getValue() {
-            return value;
-        }
-    }
+    public static final String INNER_SORT_CATEGORY_NAME = "category:name";
+    public static final List<String> VALID_SORT_FIELDS = List.of("name", "description", INNER_SORT_CATEGORY_NAME);
 
     public Long getId() {
         return id;
@@ -82,5 +70,9 @@ public class Article {
 
     public void setBrand(Brand brand) {
         this.brand = brand;
+    }
+
+    public static Boolean isValidSortField(String fields) {
+        return VALID_SORT_FIELDS.contains(fields);
     }
 }

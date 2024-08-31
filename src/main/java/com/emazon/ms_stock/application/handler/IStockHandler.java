@@ -10,4 +10,6 @@ public interface IStockHandler {
     PageDTO<BrandResDTO> getAllBrands(String direction, Integer pageSize, Integer page, String column);
 
     void createArticleInStock(ArticleReqDTO dto);
+
+    PageDTO<ArticleResDTO> getAllArticles(String direction, Integer pageSize, Integer page, String column);
 }
