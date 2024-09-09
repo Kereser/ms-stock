@@ -10,8 +10,6 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
-import java.io.IOException;
-
 @Component
 @RequiredArgsConstructor
 public class CustomJWTEntryPoint implements AuthenticationEntryPoint {
@@ -23,7 +21,7 @@ public class CustomJWTEntryPoint implements AuthenticationEntryPoint {
     private final Logger logger = LoggerFactory.getLogger(CustomJWTEntryPoint.class);
 
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
+    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) {
         if (authException.getCause() == null || authException.getCause() instanceof AuthenticationException) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         } else {
