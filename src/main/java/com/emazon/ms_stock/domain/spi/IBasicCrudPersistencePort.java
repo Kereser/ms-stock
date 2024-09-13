@@ -7,8 +7,6 @@ import java.util.Optional;
 
 public interface IBasicCrudPersistencePort<T> {
     void save(T entity);
-    void update(T entity);
-    void delete(Long id);
     PageDTO<T> findAllPageable(PageHandler page);
     Optional<T> findById(Long id);
 }
