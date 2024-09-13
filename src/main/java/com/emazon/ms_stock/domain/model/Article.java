@@ -13,6 +13,19 @@ public class Article {
     private Set<Category> categories;
     private Brand brand;
 
+    public Article() {
+    }
+
+    public Article(Long id, String name, String description, BigDecimal price, Long quantity, Set<Category> categories, Brand brand) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.quantity = quantity;
+        this.categories = categories;
+        this.brand = brand;
+    }
+
     public static final String INNER_SORT_CATEGORY_NAME = "category:name";
     public static final List<String> VALID_SORT_FIELDS = List.of("name", "description", INNER_SORT_CATEGORY_NAME);
 
