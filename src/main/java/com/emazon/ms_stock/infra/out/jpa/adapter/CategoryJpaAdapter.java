@@ -25,18 +25,6 @@ public class CategoryJpaAdapter implements ICategoryPersistencePort {
     }
 
     @Override
-    public void update(Category category) {
-        CategoryEntity categoryEntity = categoryEntityMapper.toEntity(category);
-
-        categoryJpaRepository.save(categoryEntity);
-    }
-
-    @Override
-    public void delete(Long id) {
-        categoryJpaRepository.deleteById(id);
-    }
-
-    @Override
     public PageDTO<Category> findAllPageable(PageHandler page) {
         PageDTO<CategoryEntity> entityPages = categoryEntityMapper.toEntityPage(categoryJpaRepository.findAll(ParsingUtils.toPageable(page)));
         return categoryEntityMapper.toCategoryPage(entityPages);

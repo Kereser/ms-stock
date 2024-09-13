@@ -24,16 +24,6 @@ public class BrandJpaAdapter implements IBrandPersistencePort {
     }
 
     @Override
-    public void update(Brand brand) {
-
-    }
-
-    @Override
-    public void delete(Long id) {
-
-    }
-
-    @Override
     public PageDTO<Brand> findAllPageable(PageHandler page) {
         PageDTO<BrandEntity> brandPages = brandEntityMapper.toEntityPage(brandJpaRepository.findAll(ParsingUtils.toPageable(page)));
 
