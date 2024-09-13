@@ -4,16 +4,19 @@ public class ConsUtils {
     public static final String BASIC_CATEGORIES_URL = "/stock/categories";
     public static final String BASIC_BRAND_URL = "/stock/brands";
     public static final String BASIC_ARTICLES_URL = "/stock/articles";
+    public static final String SUPPLY_URL = "/stock/articles/supply";
 
     public static final String TEST_NAME = "Test name";
     public static final String DESC_NAME = "description";
     public static final String FIELD_ERROR = "$.fieldErrors";
     public static final String FIELD_MESSAGE = "$.message";
     public static final String FIELD_NAME_PATH = "$.fieldErrors.name";
+    public static final String FIELD_ID_PATH = "$.fieldErrors.id";
     public static final String FIELD_DESCRIPTION_PATH = "$.fieldErrors.description";
     public static final String FIELD_CATEGORYIDS_PATH = "$.fieldErrors.categoryIds";
     public static final String FIELD_PRICE_PATH = "$.fieldErrors.price";
     public static final String FIELD_QUANTITY_PATH = "$.fieldErrors.quantity";
+    public static final String FIELD_ARTICLE_ID_PATH = "$.fieldErrors.articleId";
     public static final String FIELD_BRANDID_PATH = "$.fieldErrors.brandId";
     public static final String FIELD_DIRECTION_PATH = "$.fieldErrors.direction";
 
