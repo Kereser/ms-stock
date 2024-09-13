@@ -11,18 +11,15 @@ import java.util.Optional;
 public interface ArticleJpaRepository extends JpaRepository<ArticleEntity, Long> {
     Optional<ArticleEntity> findByName(String name);
 
-    @Query("SELECT DISTINCT a FROM ArticleEntity a LEFT JOIN FETCH a.categories")
-    Page<ArticleEntity> findAllBySortCriteria(Pageable pageable);
-
     @Query("""
-        SELECT a FROM ArticleEntity a
+        SELECT a FROM article a
         JOIN a.categories c
         GROUP BY a ORDER BY MIN(c.name) ASC
     """)
     Page<ArticleEntity> findAllArticlesOrderByCategoryNameASC(Pageable pageable);
 
     @Query("""
-        SELECT a FROM ArticleEntity a
+        SELECT a FROM article a
         JOIN a.categories c
         GROUP BY a ORDER BY MIN(c.name) DESC
     """)
