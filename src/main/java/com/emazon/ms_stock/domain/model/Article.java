@@ -56,6 +56,12 @@ public class Article {
         this.quantity = quantity;
     }
 
+    public void addQuantityBySupply(Long quantity) {
+        if (quantity > 0) {
+            this.quantity += quantity;
+        }
+    }
+
     public Set<Category> getCategories() {
         return categories;
     }
