@@ -68,9 +68,6 @@ class StockControllerIntegrationTest {
     @SpyBean
     private IArticlePersistencePort articlePersistencePort;
 
-    private String categoryJSON;
-    private String brandJSON;
-
     private static final String USER = "testUser";
     private static final String AUX_DEPOT = "AUX_DEPOT";
     private static final String CLIENT = "CLIENT";
@@ -113,7 +110,7 @@ class StockControllerIntegrationTest {
 
     @Test
     void Should_ThrowsException_When_CategoryAlreadyExists() throws Exception {
-        categoryJSON = mapper.writeValueAsString(categoryReqDTO);
+        String categoryJSON = mapper.writeValueAsString(categoryReqDTO);
         sentPostToCreateEntity(categoryJSON, BASIC_CATEGORIES_URL);
 
         sentPostToCreateEntity(categoryJSON, BASIC_CATEGORIES_URL)
@@ -138,7 +135,7 @@ class StockControllerIntegrationTest {
 
     @Test
     void Should_ThrowsException_When_BrandAlreadyExists() throws Exception {
-        brandJSON = mapper.writeValueAsString(brandReqDTO);
+        String brandJSON = mapper.writeValueAsString(brandReqDTO);
         sentPostToCreateEntity(brandJSON, BASIC_BRAND_URL);
 
         sentPostToCreateEntity(brandJSON, BASIC_BRAND_URL)
