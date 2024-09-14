@@ -100,6 +100,10 @@ class StockControllerIntegrationTest {
     private final SupplyReqDTO supplyReqDTO = SupplyReqDTO.builder().articleId(ARTICLE_ID).quantity(ConsUtils.LONG_ONE).build();
 
     /*** CATEGORY ***/
+    @Test
+    void Should_Get201OnBrandCategory_When_ValidPayload() throws Exception {
+        sentPostToCreateEntity(mapper.writeValueAsString(categoryReqDTO), BASIC_CATEGORIES_URL).andExpect(status().isCreated());
+    }
 
     @Test
     void Should_ThrowsAnException_When_InvalidSortFieldCategory() throws Exception{
@@ -111,7 +115,7 @@ class StockControllerIntegrationTest {
     @Test
     void Should_ThrowsException_When_CategoryAlreadyExists() throws Exception {
         String categoryJSON = mapper.writeValueAsString(categoryReqDTO);
-        sentPostToCreateEntity(categoryJSON, BASIC_CATEGORIES_URL);
+        sentPostToCreateEntity(categoryJSON, BASIC_CATEGORIES_URL).andExpect(status().isCreated());
 
         sentPostToCreateEntity(categoryJSON, BASIC_CATEGORIES_URL)
                 .andExpect(jsonPath(ConsUtils.FIELD_MESSAGE).value(Category.class.getSimpleName() + ExceptionResponse.ENTITY_ALREADY_EXISTS));
@@ -125,6 +129,10 @@ class StockControllerIntegrationTest {
     }
 
     /**** BRAND ****/
+    @Test
+    void Should_Get201OnBrandCreation_When_ValidPayload() throws Exception {
+        sentPostToCreateEntity(mapper.writeValueAsString(brandReqDTO), BASIC_BRAND_URL).andExpect(status().isCreated());
+    }
 
     @Test
     void Should_ThrowsAnException_When_InvalidSortFieldBrand() throws Exception{
@@ -150,6 +158,14 @@ class StockControllerIntegrationTest {
     }
 
     /*** ARTICLES ***/
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
+    void Should_Get201OnArticleCreation_When_ValidPayload() throws Exception {
+        sentPostToCreateEntity(mapper.writeValueAsString(categoryReqDTO), BASIC_CATEGORIES_URL).andExpect(status().isCreated());
+        sentPostToCreateEntity(mapper.writeValueAsString(brandReqDTO), BASIC_BRAND_URL).andExpect(status().isCreated());
+
+        sentPostToCreateEntity(mapper.writeValueAsString(articleReqDTO), BASIC_ARTICLES_URL).andExpect(status().isCreated());
+    }
 
     @Test
     void Should_ThrowsAnException_When_InvalidSortFieldArticles() throws Exception{
