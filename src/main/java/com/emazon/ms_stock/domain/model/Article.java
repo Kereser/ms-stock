@@ -27,7 +27,9 @@ public class Article {
     }
 
     public static final String INNER_SORT_CATEGORY_NAME = "category:name";
-    public static final List<String> VALID_SORT_FIELDS = List.of("name", "description", INNER_SORT_CATEGORY_NAME);
+    public static final String NAME_SORT = "name";
+    public static final String DESCRIPTION_SORT = "description";
+    public static final List<String> VALID_SORT_FIELDS = List.of(NAME_SORT, DESCRIPTION_SORT, INNER_SORT_CATEGORY_NAME);
 
     public Long getId() {
         return id;
