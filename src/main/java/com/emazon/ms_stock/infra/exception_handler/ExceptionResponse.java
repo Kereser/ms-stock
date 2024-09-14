@@ -1,14 +1,18 @@
 package com.emazon.ms_stock.infra.exception_handler;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.Map;
 
 @Getter
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@NoArgsConstructor
+@AllArgsConstructor
 public class ExceptionResponse {
     public static final String NOT_NULL = "must not be null";
     public static final String NOT_BLANK = "must not be blank";
