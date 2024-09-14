@@ -6,4 +6,5 @@ import java.util.Optional;
 
 public interface IBrandPersistencePort extends IBasicCrudPersistencePort<Brand> {
     Optional<Brand> findByName(String name);
+    Optional<Brand> findById(Long id);
 }
