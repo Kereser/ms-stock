@@ -10,7 +10,12 @@ public class ConsUtils {
     public static final String DESC_NAME = "description";
     public static final String FIELD_ERROR = "$.fieldErrors";
     public static final String FIELD_MESSAGE = "$.message";
+    public static final String FIELD_TOTAL_ELEMENTS = "$.totalElements";
+    public static final String FIELD_TOTAL_PAGES = "$.totalPages";
+    public static final String FIELD_PAGEABLE_PAGE_SIZE = "$.pageable.pageSize";
+    public static final String FIELD_CURRENT_PAGE = "$.currentPage";
     public static final String FIELD_NAME_PATH = "$.fieldErrors.name";
+    public static final String FIELD_CONTENT = "$.content";
     public static final String FIELD_ID_PATH = "$.fieldErrors.id";
     public static final String FIELD_DESCRIPTION_PATH = "$.fieldErrors.description";
     public static final String FIELD_CATEGORYIDS_PATH = "$.fieldErrors.categoryIds";
@@ -25,6 +30,10 @@ public class ConsUtils {
     public static final Integer FIELD_WITH_ERRORS_AT_ARTICLE = 6;
 
     public static final Long LONG_ONE = 1L;
+    public static final Long LONG_TWO = 2L;
+
+    public static final Integer INTEGER_1 = 1;
+    public static final Integer INTEGER_2 = 2;
 
     public static final String PLUS_FIFTY_CHARACTERS = "d".repeat(51);
     public static final String PLUS_NINETY_CHARACTERS = "d".repeat(91);
@@ -33,7 +42,10 @@ public class ConsUtils {
     public static final String INVALID_SORT_CRITERIA = "Invalid sort criteria in request param";
     public static final String NON_EXISTING_SORTING_COLUMN = "Non:existing:column";
     public static final String COLUMN_PARAM = "column";
+    public static final String SORT_ASC_VALUE = "ASC";
+    public static final String SORT_DESC_VALUE = "DESC";
 
     public static final String NON_EXISTING_DIRECTION_COLUMN = "Non:existing:DIRECTION";
+    public static final String SORT_CATEGORY_NAME = "category:name";
     public static final String DIRECTION_PARAM = "direction";
 }

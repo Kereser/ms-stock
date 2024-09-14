@@ -4,6 +4,7 @@ import com.emazon.ms_stock.ConsUtils;
 import com.emazon.ms_stock.application.dto.ArticleReqDTO;
 import com.emazon.ms_stock.application.dto.BrandReqDTO;
 import com.emazon.ms_stock.application.dto.CategoryReqDTO;
+import com.emazon.ms_stock.application.dto.supply.SupplyReqDTO;
 import com.emazon.ms_stock.application.handler.StockHandler;
 import com.emazon.ms_stock.infra.exception_handler.ExceptionResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,7 +29,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-@WithMockUser(roles="ADMIN")
 class StockControllerUnitTest {
 
     @Autowired
@@ -57,6 +57,7 @@ class StockControllerUnitTest {
         Category
      */
     @Test
+    @WithMockUser(roles="ADMIN")
     void Should_CreateCategoryAndGetCorrectStatus_WhenValidPayload() throws Exception {
         categoryJSON = mapper.writeValueAsString(CategoryReqDTO.builder().name(ConsUtils.TEST_NAME).description(ConsUtils.DESC_NAME).build());
         ResultActions res = sentPostToCreateEntity(categoryJSON, ConsUtils.BASIC_CATEGORIES_URL);
@@ -65,6 +66,7 @@ class StockControllerUnitTest {
     }
 
     @Test
+    @WithMockUser(roles="ADMIN")
     void Should_ThrowsException_When_InvalidCategoryPayload() throws Exception {
         categoryJSON = mapper.writeValueAsString(CategoryReqDTO.builder().name(null).description(null).build());
 
@@ -90,6 +92,7 @@ class StockControllerUnitTest {
         Brand
      */
     @Test
+    @WithMockUser(roles="ADMIN")
     void Should_CreateBrandAndGetCorrectStatus_WhenValidPayload() throws Exception {
         brandJSON = mapper.writeValueAsString(BrandReqDTO.builder().name(ConsUtils.TEST_NAME).description(ConsUtils.DESC_NAME).build());
 
@@ -97,6 +100,7 @@ class StockControllerUnitTest {
     }
 
     @Test
+    @WithMockUser(roles="ADMIN")
     void Should_ThrowsException_When_InvalidBrandPayload() throws Exception {
         brandJSON = mapper.writeValueAsString(BrandReqDTO.builder().name(null).description(null).build());
 
@@ -121,6 +125,7 @@ class StockControllerUnitTest {
         * Article
     */
     @Test
+    @WithMockUser(roles="ADMIN")
     void Should_CreateArticleAndGetCorrectStatus_WhenValidPayload() throws Exception {
         articleJSON = mapper.writeValueAsString(validArticle);
 
@@ -128,6 +133,7 @@ class StockControllerUnitTest {
     }
 
     @Test
+    @WithMockUser(roles="ADMIN")
     void Should_ThrowsException_When_InvalidArticlePayload() throws Exception {
         articleJSON = mapper.writeValueAsString(ArticleReqDTO.builder().build());
 
@@ -144,6 +150,36 @@ class StockControllerUnitTest {
     @Test
     void Should_Get200Code_When_GetAllArticles() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get(ConsUtils.BASIC_ARTICLES_URL)).andExpect(status().isOk());
+    }
+
+    /*** Supply ***/
+
+    @Test
+    @WithMockUser(roles = "AUX_DEPOT")
+    void Should_ThrowsException_When_NotPayload() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post(ConsUtils.SUPPLY_URL)).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void Should_ThrowsException_When_NotValidAuthentication() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post(ConsUtils.SUPPLY_URL)).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(roles = "CLIENT")
+    void Should_ThrowsException_When_NotValidRole() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post(ConsUtils.SUPPLY_URL)).andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = "AUX_DEPOT")
+    void Should_ThrowsException_When_NotValidPayload() throws Exception {
+        String supplyJSON = mapper.writeValueAsString(Set.of(SupplyReqDTO.builder().build()));
+
+        sentPostToCreateEntity(supplyJSON, ConsUtils.SUPPLY_URL)
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath(ConsUtils.FIELD_QUANTITY_PATH).value(ExceptionResponse.NOT_NULL))
+                .andExpect(jsonPath(ConsUtils.FIELD_ARTICLE_ID_PATH).value(ExceptionResponse.NOT_NULL));
     }
 
     private void assertFieldErrors(ResultActions res, Integer numberOfFields) throws Exception {

@@ -25,7 +25,15 @@ class CategoryUseCaseTest {
     @InjectMocks
     private CategoryUseCase categoryUseCase;
 
-    private final Category category = new Category("Test cat", "Test desc");
+    private static final String NAME = "Test name";
+    private static final String DESCRIPTION = "Test desc";
+
+    private static final Integer PAGE = 0;
+    private static final Integer PAGE_SIZE = 20;
+
+    private static final Integer INTEGER_1 = 1;
+
+    private final Category category = new Category(NAME, DESCRIPTION);
 
     @Test
     @DisplayName(value = "Throws an exception when a category with the same name is already saved.")
@@ -40,17 +48,18 @@ class CategoryUseCaseTest {
     void Should_SaveCategory_When_UniqueName() {
         Mockito.when(iCategoryPersistencePort.findByName(Mockito.anyString())).thenReturn(Optional.empty());
 
-        Category cat = new Category("Not same name", "daffsaf");
+        Category cat = new Category(NAME, DESCRIPTION);
         categoryUseCase.save(cat);
 
-        Mockito.verify(iCategoryPersistencePort, Mockito.times(1)).findByName(cat.getName());
+        Mockito.verify(iCategoryPersistencePort, Mockito.times(INTEGER_1)).findByName(cat.getName());
+        Mockito.verify(iCategoryPersistencePort, Mockito.times(INTEGER_1)).save(Mockito.any());
     }
 
     @Test
     @DisplayName(value = "Test valid calls to persistence port when getting all categories.")
     void Should_InteractWithPersistencePortOneTimeOnly_When_ValidPageRequest() {
-        categoryUseCase.findAllPageable(PageHandler.builder().pageSize(20).page(0).build());
+        categoryUseCase.findAllPageable(PageHandler.builder().pageSize(PAGE_SIZE).page(PAGE).build());
 
-        Mockito.verify(iCategoryPersistencePort, Mockito.times(1)).findAllPageable(Mockito.any());
+        Mockito.verify(iCategoryPersistencePort, Mockito.times(INTEGER_1)).findAllPageable(Mockito.any());
     }
 }
