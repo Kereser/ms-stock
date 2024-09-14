@@ -15,11 +15,4 @@ public abstract class BaseEntityException extends RuntimeException {
     this.entityName = entityName;
     this.reason = null;
   }
-
-  BaseEntityException(String entityName, String field, String reason) {
-    super();
-    this.field = field;
-    this.reason = reason;
-    this.entityName = entityName;
-  }
 }
