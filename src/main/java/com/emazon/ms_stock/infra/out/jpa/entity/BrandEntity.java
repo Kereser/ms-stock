@@ -5,12 +5,12 @@ import lombok.*;
 
 import java.util.List;
 
+@Entity(name = "brand")
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
 public class BrandEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

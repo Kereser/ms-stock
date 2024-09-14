@@ -1,5 +1,6 @@
 package com.emazon.ms_stock.application.handler;
 
+import com.emazon.ms_stock.application.dto.supply.SupplyReqDTO;
 import com.emazon.ms_stock.application.mapper.ArticleDTOMapper;
 import com.emazon.ms_stock.application.dto.*;
 import com.emazon.ms_stock.application.mapper.BrandDTOMapper;
@@ -15,6 +16,8 @@ import com.emazon.ms_stock.infra.exception.InvalidRequestParam;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.Set;
 
 @Service
 @Transactional
@@ -77,5 +80,10 @@ public class StockHandler implements IStockHandler {
         PageHandler pageHandler = new PageHandler(ParsingUtils.getSortDirectionOrDefault(direction), pageSize, page, column);
         PageDTO<Article> articlePageDTO = articleServicePort.findAllPageable(pageHandler);
         return articleDTOMapper.toPageResDTO(articlePageDTO);
+    }
+
+    @Override
+    public void addSupply(Set<SupplyReqDTO> dto) {
+        articleServicePort.addSupply(dto);
     }
 }

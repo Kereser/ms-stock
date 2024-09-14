@@ -13,8 +13,23 @@ public class Article {
     private Set<Category> categories;
     private Brand brand;
 
+    public Article() {
+    }
+
+    public Article(Long id, String name, String description, BigDecimal price, Long quantity, Set<Category> categories, Brand brand) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.quantity = quantity;
+        this.categories = categories;
+        this.brand = brand;
+    }
+
     public static final String INNER_SORT_CATEGORY_NAME = "category:name";
-    public static final List<String> VALID_SORT_FIELDS = List.of("name", "description", INNER_SORT_CATEGORY_NAME);
+    public static final String NAME_SORT = "name";
+    public static final String DESCRIPTION_SORT = "description";
+    public static final List<String> VALID_SORT_FIELDS = List.of(NAME_SORT, DESCRIPTION_SORT, INNER_SORT_CATEGORY_NAME);
 
     public Long getId() {
         return id;
@@ -54,6 +69,12 @@ public class Article {
 
     public void setQuantity(Long quantity) {
         this.quantity = quantity;
+    }
+
+    public void addQuantityBySupply(Long quantity) {
+        if (quantity > 0) {
+            this.quantity += quantity;
+        }
     }
 
     public Set<Category> getCategories() {

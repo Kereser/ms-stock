@@ -10,6 +10,7 @@ import com.emazon.ms_stock.infra.out.jpa.mapper.ArticleEntityMapper;
 import com.emazon.ms_stock.infra.out.jpa.repository.ArticleJpaRepository;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -21,27 +22,6 @@ public class ArticleJpaAdapter implements IArticlePersistencePort {
     @Override
     public void save(Article entity) {
         repository.save(mapper.toEntity(entity));
-    }
-
-    @Override
-    public void update(Article entity) {
-
-    }
-
-    @Override
-    public void delete(Long id) {
-
-    }
-
-    @Override
-    public Optional<Article> findById(Long id) {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<Article> findByName(String name) {
-        Optional<ArticleEntity> opt = repository.findByName(name);
-        return opt.map(mapper::toArticle);
     }
 
     @Override
@@ -65,5 +45,13 @@ public class ArticleJpaAdapter implements IArticlePersistencePort {
         return mapper.toArticlePage(pageEntity);
     }
 
+    @Override
+    public List<Article> findAllById(Iterable<Long> ids) {
+        return mapper.toList(repository.findAllById(ids));
+    }
 
+    @Override
+    public void saveAll(Iterable<Article> articles) {
+        repository.saveAll(mapper.toListEntity(articles));
+    }
 }

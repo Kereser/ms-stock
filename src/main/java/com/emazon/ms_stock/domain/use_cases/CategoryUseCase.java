@@ -30,22 +30,7 @@ public class CategoryUseCase implements ICategoryServicePort {
     }
 
     @Override
-    public void update(Category category) {
-        persistencePort.update(category);
-    }
-
-    @Override
-    public void delete(Long id) {
-        persistencePort.delete(id);
-    }
-
-    @Override
     public PageDTO<Category> findAllPageable(PageHandler page) {
         return persistencePort.findAllPageable(page);
-    }
-
-    @Override
-    public Optional<Category> findById(Long id) {
-        return persistencePort.findById(id);
     }
 }

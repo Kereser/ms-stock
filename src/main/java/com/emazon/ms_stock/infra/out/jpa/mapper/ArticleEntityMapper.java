@@ -8,6 +8,8 @@ import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring",
         uses = {CategoryEntityMapper.class, BrandEntityMapper.class},
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
@@ -21,4 +23,8 @@ public interface ArticleEntityMapper {
     PageDTO<ArticleEntity> toArticleEntityPage(Page<ArticleEntity> articleEntityPage);
 
     PageDTO<Article> toArticlePage(PageDTO<ArticleEntity> articleEntityPageDTO);
+
+    List<Article> toList(List<ArticleEntity> entityList);
+
+    Iterable<ArticleEntity> toListEntity(Iterable<Article> articles);
 }

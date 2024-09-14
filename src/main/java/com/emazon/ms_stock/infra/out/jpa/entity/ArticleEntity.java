@@ -2,16 +2,18 @@ package com.emazon.ms_stock.infra.out.jpa.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.FieldNameConstants;
 
 import java.math.BigDecimal;
 import java.util.*;
 
+@Entity(name = "article")
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
+@FieldNameConstants
 public class ArticleEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

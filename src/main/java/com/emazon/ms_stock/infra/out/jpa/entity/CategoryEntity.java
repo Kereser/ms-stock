@@ -5,12 +5,12 @@ import lombok.*;
 
 import java.util.Set;
 
+@Entity(name = "category")
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
 public class CategoryEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

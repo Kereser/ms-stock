@@ -1,6 +1,9 @@
 package com.emazon.ms_stock.application.handler;
 
 import com.emazon.ms_stock.application.dto.*;
+import com.emazon.ms_stock.application.dto.supply.SupplyReqDTO;
+
+import java.util.Set;
 
 public interface IStockHandler {
     void saveCategoryInStock(CategoryReqDTO reqDTO);
@@ -12,4 +15,6 @@ public interface IStockHandler {
     void createArticleInStock(ArticleReqDTO dto);
 
     PageDTO<ArticleResDTO> getAllArticles(String direction, Integer pageSize, Integer page, String column);
+
+    void addSupply(Set<SupplyReqDTO> dto);
 }

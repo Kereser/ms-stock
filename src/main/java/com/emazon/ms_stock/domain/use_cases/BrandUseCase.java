@@ -27,16 +27,6 @@ public class BrandUseCase implements IBrandServicePort {
     }
 
     @Override
-    public void update(Brand brand) {
-
-    }
-
-    @Override
-    public void delete(Long id) {
-
-    }
-
-    @Override
     public PageDTO<Brand> findAllPageable(PageHandler page) {
         return persistencePort.findAllPageable(page);
     }

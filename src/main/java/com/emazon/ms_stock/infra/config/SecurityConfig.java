@@ -1,5 +1,6 @@
 package com.emazon.ms_stock.infra.config;
 
+import com.emazon.ms_stock.infra.security.entrypoint.CustomBasicAuthenticationEntryPoint;
 import com.emazon.ms_stock.infra.security.entrypoint.CustomJWTEntryPoint;
 import com.emazon.ms_stock.infra.security.filter.JwtValidatorFilter;
 import lombok.RequiredArgsConstructor;
@@ -20,17 +21,23 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 @EnableMethodSecurity
 public class SecurityConfig {
 
+    private static final String AUX_DEPOT = "AUX_DEPOT";
+    private static final String ADMIN = "ADMIN";
+
+    private final CustomBasicAuthenticationEntryPoint customBasicAuthenticationEntryPoint;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, CustomJWTEntryPoint jwtEntryPoint) throws Exception {
         http
             .csrf(AbstractHttpConfigurer::disable)
-            .httpBasic(AbstractHttpConfigurer::disable)
+            .httpBasic(httpBasic -> httpBasic.authenticationEntryPoint(customBasicAuthenticationEntryPoint))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> {
-                auth.requestMatchers(HttpMethod.POST, "/stock/**").hasRole("ADMIN");
+                auth.requestMatchers(HttpMethod.POST, "/stock/articles/supply").hasRole(AUX_DEPOT);
+                auth.requestMatchers(HttpMethod.POST, "/stock/**").hasRole(ADMIN);
                 auth.requestMatchers(HttpMethod.GET, "/stock/**").permitAll();
 
-                auth.anyRequest().authenticated();
+                auth.anyRequest().denyAll();
             });
 
         http.anonymous(AbstractHttpConfigurer::disable);
