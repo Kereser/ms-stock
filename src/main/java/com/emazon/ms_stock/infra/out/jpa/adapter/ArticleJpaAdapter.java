@@ -25,17 +25,6 @@ public class ArticleJpaAdapter implements IArticlePersistencePort {
     }
 
     @Override
-    public Optional<Article> findById(Long id) {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<Article> findByName(String name) {
-        Optional<ArticleEntity> opt = repository.findByName(name);
-        return opt.map(mapper::toArticle);
-    }
-
-    @Override
     public PageDTO<Article> findAllPageable(PageHandler page) {
         PageDTO<ArticleEntity> pageEntity = mapper.toArticleEntityPage(repository.findAll(ParsingUtils.toPageable(page)));
 

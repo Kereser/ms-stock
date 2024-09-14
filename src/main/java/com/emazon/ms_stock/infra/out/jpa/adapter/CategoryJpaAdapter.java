@@ -31,11 +31,6 @@ public class CategoryJpaAdapter implements ICategoryPersistencePort {
     }
 
     @Override
-    public Optional<Category> findById(Long id) {
-        return Optional.empty();
-    }
-
-    @Override
     public Optional<Category> findByName(String name) {
         Optional<CategoryEntity> optCategory = categoryJpaRepository.findByName(name);
 
