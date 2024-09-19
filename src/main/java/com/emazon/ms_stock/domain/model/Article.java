@@ -1,6 +1,7 @@
 package com.emazon.ms_stock.domain.model;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -12,6 +13,8 @@ public class Article {
     private Long quantity;
     private Set<Category> categories;
     private Brand brand;
+    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime updateAt = LocalDateTime.now();
 
     public Article() {
     }
@@ -95,5 +98,13 @@ public class Article {
 
     public static Boolean isValidSortField(String fields) {
         return VALID_SORT_FIELDS.contains(fields);
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdateAt() {
+        return updateAt;
     }
 }
