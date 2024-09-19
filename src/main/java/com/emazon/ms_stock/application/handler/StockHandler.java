@@ -1,6 +1,5 @@
 package com.emazon.ms_stock.application.handler;
 
-import com.emazon.ms_stock.application.dto.supply.SupplyReqDTO;
 import com.emazon.ms_stock.application.mapper.ArticleDTOMapper;
 import com.emazon.ms_stock.application.dto.*;
 import com.emazon.ms_stock.application.mapper.BrandDTOMapper;
@@ -83,7 +82,12 @@ public class StockHandler implements IStockHandler {
     }
 
     @Override
-    public void addSupply(Set<SupplyReqDTO> dto) {
-        articleServicePort.addSupply(dto);
+    public void addSupply(Set<ItemQuantityDTO> itemQuantityDTOS) {
+        articleServicePort.addSupply(itemQuantityDTOS);
+    }
+
+    @Override
+    public void handleCartAdditionValidations(Set<ItemQuantityDTO> itemQuantityDTOS) {
+        articleServicePort.handleCartAdditionValidations(itemQuantityDTOS);
     }
 }

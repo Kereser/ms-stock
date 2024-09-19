@@ -1,7 +1,7 @@
 package com.emazon.ms_stock.infra.input.rest;
 
 import com.emazon.ms_stock.application.dto.*;
-import com.emazon.ms_stock.application.dto.supply.SupplyReqDTO;
+import com.emazon.ms_stock.application.dto.ItemsReqDTO;
 import com.emazon.ms_stock.application.handler.IStockHandler;
 import com.emazon.ms_stock.infra.SortOrder;
 import jakarta.validation.Valid;
@@ -9,8 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Set;
 
 @RestController
 @RequestMapping("/stock")
@@ -65,8 +63,14 @@ public class StockController {
     }
 
     @PostMapping("/articles/supply")
-    public ResponseEntity<Void> addSupply(@RequestBody @Valid Set<@Valid SupplyReqDTO> dto) {
-        stockHandler.addSupply(dto);
+    public ResponseEntity<Void> addSupply(@RequestBody @Valid ItemsReqDTO itemsReqDTO) {
+        stockHandler.addSupply(itemsReqDTO.getItems());
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PutMapping("/articles")
+    public ResponseEntity<Void> handleCartAdditionValidations(@RequestBody @Valid ItemsReqDTO itemsReqDTO) {
+        stockHandler.handleCartAdditionValidations(itemsReqDTO.getItems());
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
