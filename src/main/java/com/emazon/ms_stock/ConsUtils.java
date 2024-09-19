@@ -1,13 +1,34 @@
 package com.emazon.ms_stock;
 
 public class ConsUtils {
+
+    private ConsUtils() {
+    }
+
+    public static PathBuilder builderPath() {
+        return new PathBuilder();
+    }
+
     public static final String BASIC_CATEGORIES_URL = "/stock/categories";
     public static final String BASIC_BRAND_URL = "/stock/brands";
     public static final String BASIC_ARTICLES_URL = "/stock/articles";
     public static final String SUPPLY_URL = "/stock/articles/supply";
 
+    public static final String CLIENT = "CLIENT";
+    public static final String ADMIN = "ADMIN";
+    public static final String AUX_DEPOT = "AUX_DEPOT";
+    public static final String ROLE = "ROLE_";
+
+    public static final String AUTHORIZATION = "Authorization";
+    public static final String BEARER = "Bearer ";
+
+    public static final String LAST_TEST_NAME = "Zipikaka";
+    public static final String BASE_MATCHER = "$";
+    public static final String NAME_OF_FIRST_CATEGORY_ON_ARTICLE = "$.content[0].categories[0].name";
+
     public static final String TEST_NAME = "Test name";
-    public static final String DESC_NAME = "description";
+    public static final String PASSWORD = "password";
+    public static final String VALID_DESC = "description";
     public static final String FIELD_ERROR = "$.fieldErrors";
     public static final String FIELD_MESSAGE = "$.message";
     public static final String FIELD_TOTAL_ELEMENTS = "$.totalElements";
@@ -18,19 +39,26 @@ public class ConsUtils {
     public static final String FIELD_CONTENT = "$.content";
     public static final String FIELD_ID_PATH = "$.fieldErrors.id";
     public static final String FIELD_DESCRIPTION_PATH = "$.fieldErrors.description";
-    public static final String FIELD_CATEGORYIDS_PATH = "$.fieldErrors.categoryIds";
+    public static final String FIELD_CATEGORY_IDS_PATH = "$.fieldErrors.categoryIds";
+    public static final String FIELD_CATEGORY_PATH = "$.fieldErrors.categories";
     public static final String FIELD_PRICE_PATH = "$.fieldErrors.price";
     public static final String FIELD_QUANTITY_PATH = "$.fieldErrors.quantity";
-    public static final String FIELD_ARTICLE_ID_PATH = "$.fieldErrors.articleId";
-    public static final String FIELD_BRANDID_PATH = "$.fieldErrors.brandId";
+    public static final String FIELD_QUANTITY_PATH_ARRAY = "$.fieldErrors['items[].quantity']";
+    public static final String FIELD_ARTICLE_ID_PATH_ARRAY = "$.fieldErrors['items[].articleId']";
+    public static final String FIELD_BRAND_ID_PATH = "$.fieldErrors.brandId";
     public static final String FIELD_DIRECTION_PATH = "$.fieldErrors.direction";
+    public static final String FIELD_ITEMS = "$.fieldErrors.items";
+
+
+    public static final String REQUIRED_BODY = "Required request body is missing";
 
     public static final Integer FIELD_WITH_ERRORS_AT_CATEGORY = 2;
     public static final Integer FIELD_WITH_ERRORS_AT_BRAND = 2;
     public static final Integer FIELD_WITH_ERRORS_AT_ARTICLE = 6;
 
-    public static final Long LONG_ONE = 1L;
-    public static final Long LONG_TWO = 2L;
+    public static final Long LONG_1 = 1L;
+    public static final Long LONG_2 = 2L;
+    public static final Long LONG_10 = 10L;
 
     public static final Integer INTEGER_1 = 1;
     public static final Integer INTEGER_2 = 2;
@@ -48,4 +76,39 @@ public class ConsUtils {
     public static final String NON_EXISTING_DIRECTION_COLUMN = "Non:existing:DIRECTION";
     public static final String SORT_CATEGORY_NAME = "category:name";
     public static final String DIRECTION_PARAM = "direction";
+
+    public static final String BASIC_URL = "/stock";
+
+    public static class PathBuilder {
+        private String finalPath = BASIC_URL;
+
+        public PathBuilder withSupply() {
+            this.finalPath += "/supply";
+            return this;
+        }
+
+        public PathBuilder withArticles() {
+            this.finalPath += "/articles";
+            return this;
+        }
+
+        public PathBuilder withCategories() {
+            this.finalPath += "/categories";
+            return this;
+        }
+
+        public PathBuilder withBrands() {
+            this.finalPath += "/brands";
+            return this;
+        }
+
+        public PathBuilder withAnything() {
+            this.finalPath += "/**";
+            return this;
+        }
+
+        public String build() {
+            return finalPath;
+        }
+    }
 }

@@ -85,8 +85,27 @@ public class ControllerAdvisor {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
 
+    @ExceptionHandler(NotSufficientStock.class)
+    public ResponseEntity<ExceptionResponse> handleNotEnoghStock(BaseEntityException ex) {
+        res = ExceptionResponse.builder()
+                .message(ExceptionResponse.STOCK_WILL_BE_AVAILABLE_SOON)
+                .fieldErrors(Map.of(ex.getField(), String.format(ExceptionResponse.NOT_ENOUGH_STOCK, ex.getReason())))
+                .build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(res);
+    }
+
+    @ExceptionHandler(ArticleCategoryQuantityException.class)
+    public ResponseEntity<ExceptionResponse> handleNotValidArticleCategoryConstraint(BaseEntityException ex) {
+        res = ExceptionResponse.builder()
+                .message(ExceptionResponse.FAILED_CONSTRAINT_FOR_ARTICLE_CATEGORY)
+                .fieldErrors(Map.of(ex.getField(), ExceptionResponse.EXCEEDED))
+                .build();
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(res);
+    }
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ExceptionResponse> handleBadRequestOnConstrains(HttpMessageNotReadableException ex) {
+    public ResponseEntity<ExceptionResponse> handleBadRequestOnConstraintsForRequest(HttpMessageNotReadableException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ExceptionResponse.builder().message(ex.getMessage().split(":")[0]).build());
     }
