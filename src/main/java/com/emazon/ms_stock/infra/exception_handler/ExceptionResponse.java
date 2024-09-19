@@ -27,6 +27,12 @@ public class ExceptionResponse {
     public static final String INVALID_TOKEN = "Invalid token.";
     public static final String ERROR_PROCESSING_OPERATION = "Error processing operation with: ";
 
+    public static final String NOT_ENOUGH_STOCK = "There is not enough stock to process the request for id: %s";
+    public static final String STOCK_WILL_BE_AVAILABLE_SOON = "Not enough stock. Will be restored soon.";
+
+    public static final String FAILED_CONSTRAINT_FOR_ARTICLE_CATEGORY = "Request does not meet constraint of 3 articles at max per category.";
+    public static final String EXCEEDED = "Exceeded.";
+
     private String message;
     private Map<String, Object> fieldErrors;
 }
