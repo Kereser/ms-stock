@@ -1,5 +1,6 @@
 package com.emazon.ms_stock.domain.use_cases;
 
+import com.emazon.ms_stock.ConsUtils;
 import com.emazon.ms_stock.application.dto.*;
 import com.emazon.ms_stock.domain.api.IArticleServicePort;
 import com.emazon.ms_stock.domain.model.Article;
@@ -113,15 +114,20 @@ public class ArticleUseCase implements IArticleServicePort {
     private void handleArticleCategoryQuantityConstraint(Set<Article> articles) {
         if (articles.size() <= 3) return;
 
+        Map<Long, Integer> hashMap = buildHashMap(articles);
+
+        if (hashMap.values().stream().anyMatch(c -> c > ConsUtils.INTEGER_3)) {
+            throw new ArticleCategoryQuantityException(Article.class.getSimpleName(), ArticleEntity.Fields.categories);
+        }
+    }
+
+    private Map<Long, Integer> buildHashMap(Set<Article> articles) {
         Map<Long, Integer> hashMap = new HashMap<>();
         List<Long> categoriesId = new ArrayList<>();
 
         articles.forEach(a -> categoriesId.addAll(a.getCategories().stream().map(Category::getId).toList()));
+        categoriesId.forEach(cId -> hashMap.compute(cId, (k, v) -> v == null ? ConsUtils.INTEGER_1 : v + ConsUtils.INTEGER_1));
 
-        categoriesId.forEach(cId -> hashMap.compute(cId, (k, v) -> v == null ? 1 : v+1));
-
-        if (hashMap.values().stream().anyMatch(c -> c > 3)) {
-            throw new ArticleCategoryQuantityException(Article.class.getSimpleName(), ArticleEntity.Fields.categories);
-        }
+        return hashMap;
     }
 }

@@ -62,6 +62,7 @@ public class ConsUtils {
 
     public static final Integer INTEGER_1 = 1;
     public static final Integer INTEGER_2 = 2;
+    public static final Integer INTEGER_3 = 3;
 
     public static final String PLUS_FIFTY_CHARACTERS = "d".repeat(51);
     public static final String PLUS_NINETY_CHARACTERS = "d".repeat(91);
