@@ -22,7 +22,12 @@ public class ConsUtils {
     public static final String AUTHORIZATION = "Authorization";
     public static final String BEARER = "Bearer ";
 
+    public static final String LAST_TEST_NAME = "Zipikaka";
+    public static final String BASE_MATCHER = "$";
+    public static final String NAME_OF_FIRST_CATEGORY_ON_ARTICLE = "$.content[0].categories[0].name";
+
     public static final String TEST_NAME = "Test name";
+    public static final String PASSWORD = "password";
     public static final String VALID_DESC = "description";
     public static final String FIELD_ERROR = "$.fieldErrors";
     public static final String FIELD_MESSAGE = "$.message";
@@ -57,7 +62,6 @@ public class ConsUtils {
 
     public static final Integer INTEGER_1 = 1;
     public static final Integer INTEGER_2 = 2;
-    public static final Integer INTEGER_3 = 3;
 
     public static final String PLUS_FIFTY_CHARACTERS = "d".repeat(51);
     public static final String PLUS_NINETY_CHARACTERS = "d".repeat(91);
@@ -85,6 +89,21 @@ public class ConsUtils {
 
         public PathBuilder withArticles() {
             this.finalPath += "/articles";
+            return this;
+        }
+
+        public PathBuilder withCategories() {
+            this.finalPath += "/categories";
+            return this;
+        }
+
+        public PathBuilder withBrands() {
+            this.finalPath += "/brands";
+            return this;
+        }
+
+        public PathBuilder withAnything() {
+            this.finalPath += "/**";
             return this;
         }
 
