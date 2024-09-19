@@ -1,10 +1,7 @@
 package com.emazon.ms_stock.infra.input.rest;
 
 import com.emazon.ms_stock.ConsUtils;
-import com.emazon.ms_stock.application.dto.ArticleReqDTO;
-import com.emazon.ms_stock.application.dto.BrandReqDTO;
-import com.emazon.ms_stock.application.dto.CategoryReqDTO;
-import com.emazon.ms_stock.application.dto.supply.SupplyReqDTO;
+import com.emazon.ms_stock.application.dto.*;
 import com.emazon.ms_stock.application.handler.StockHandler;
 import com.emazon.ms_stock.infra.exception_handler.ExceptionResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -108,10 +106,10 @@ class StockControllerUnitTest {
 
         res.andExpect(jsonPath(ConsUtils.FIELD_NAME_PATH).value(ExceptionResponse.NOT_BLANK))
                 .andExpect(jsonPath(ConsUtils.FIELD_DESCRIPTION_PATH).value(ExceptionResponse.NOT_BLANK))
-                .andExpect(jsonPath(ConsUtils.FIELD_CATEGORYIDS_PATH).value(ExceptionResponse.NOT_NULL))
+                .andExpect(jsonPath(ConsUtils.FIELD_CATEGORY_IDS_PATH).value(ExceptionResponse.NOT_NULL))
                 .andExpect(jsonPath(ConsUtils.FIELD_PRICE_PATH).value(ExceptionResponse.NOT_NULL))
                 .andExpect(jsonPath(ConsUtils.FIELD_QUANTITY_PATH).value(ExceptionResponse.NOT_NULL))
-                .andExpect(jsonPath(ConsUtils.FIELD_BRANDID_PATH).value(ExceptionResponse.NOT_NULL));
+                .andExpect(jsonPath(ConsUtils.FIELD_BRAND_ID_PATH).value(ExceptionResponse.NOT_NULL));
     }
 
     /*** Supply ***/
@@ -135,16 +133,65 @@ class StockControllerUnitTest {
     @Test
     @WithMockUser(roles = "AUX_DEPOT")
     void Should_ThrowsException_When_NotValidPayload() throws Exception {
-        String supplyJSON = mapper.writeValueAsString(Set.of(SupplyReqDTO.builder().build()));
+        String supplyJSON = mapper.writeValueAsString(ItemsReqDTO.builder().items(Set.of(ItemQuantityDTO.builder().build())).build());
 
         sentPostToCreateEntity(supplyJSON, ConsUtils.SUPPLY_URL)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath(ConsUtils.FIELD_QUANTITY_PATH).value(ExceptionResponse.NOT_NULL))
-                .andExpect(jsonPath(ConsUtils.FIELD_ARTICLE_ID_PATH).value(ExceptionResponse.NOT_NULL));
+                .andExpect(jsonPath(ConsUtils.FIELD_QUANTITY_PATH_ARRAY).value(ExceptionResponse.NOT_NULL))
+                .andExpect(jsonPath(ConsUtils.FIELD_ARTICLE_ID_PATH_ARRAY).value(ExceptionResponse.NOT_NULL));
+    }
+
+    @Test
+    @WithMockUser(roles = "AUX_DEPOT")
+    void Should_ThrowsException_When_NoBody() throws Exception {
+
+        mockMvc.perform(MockMvcRequestBuilders.post(ConsUtils.builderPath().withArticles().withSupply().build()))
+                .andExpect(jsonPath(ConsUtils.FIELD_MESSAGE).value(ConsUtils.REQUIRED_BODY))
+                .andExpect(status().isBadRequest());
+    }
+
+    /*** Cart Addition ***/
+    @Test
+    @WithMockUser(roles = ConsUtils.CLIENT)
+    void Should_ThrowsException_When_NotValidFieldsForCart() throws Exception {
+        mockMvc.perform(put(ConsUtils.builderPath().withArticles().build(), ConsUtils.INTEGER_1)
+                        .content(mapper.writeValueAsString(ItemsReqDTO.builder().build()))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath(ConsUtils.FIELD_MESSAGE).value(ExceptionResponse.FIELD_VALIDATION_ERRORS))
+                .andExpect(jsonPath(ConsUtils.FIELD_ITEMS).value(ExceptionResponse.NOT_NULL))
+                .andExpect(status().isBadRequest());
+
+        mockMvc.perform(put(ConsUtils.builderPath().withArticles().build(), ConsUtils.INTEGER_1)
+                        .content(mapper.writeValueAsString(ItemsReqDTO.builder().items(Set.of(ItemQuantityDTO.builder().build())).build()))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath(ConsUtils.FIELD_MESSAGE).value(ExceptionResponse.FIELD_VALIDATION_ERRORS))
+                .andExpect(jsonPath(ConsUtils.FIELD_ARTICLE_ID_PATH_ARRAY).value(ExceptionResponse.NOT_NULL))
+                .andExpect(jsonPath(ConsUtils.FIELD_QUANTITY_PATH_ARRAY).value(ExceptionResponse.NOT_NULL))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser(roles = ConsUtils.CLIENT)
+    void Should_ThrowsException_When_NotBodyForCart() throws Exception {
+        mockMvc.perform(put(ConsUtils.builderPath().withArticles().build(), ConsUtils.INTEGER_1))
+                .andExpect(jsonPath(ConsUtils.FIELD_MESSAGE).value(ConsUtils.REQUIRED_BODY))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser(roles = ConsUtils.ADMIN)
+    void Should_ThrowsException_When_NotValidRoleForCart() throws Exception {
+        mockMvc.perform(put(ConsUtils.builderPath().withArticles().build(), ConsUtils.INTEGER_1))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void Should_ThrowsException_When_NotAuthenticatedForCart() throws Exception {
+        mockMvc.perform(put(ConsUtils.builderPath().withArticles().build(), ConsUtils.INTEGER_1))
+                .andExpect(status().isUnauthorized());
     }
 
     /*** COMMON ***/
-
     private void assertFieldErrors(ResultActions res, Integer numberOfFields) throws Exception {
         final String fieldErrors = ConsUtils.FIELD_ERROR;
         res.andExpect(jsonPath(ConsUtils.FIELD_MESSAGE).value(ExceptionResponse.FIELD_VALIDATION_ERRORS))
