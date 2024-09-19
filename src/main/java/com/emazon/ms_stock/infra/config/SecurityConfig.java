@@ -1,5 +1,6 @@
 package com.emazon.ms_stock.infra.config;
 
+import com.emazon.ms_stock.ConsUtils;
 import com.emazon.ms_stock.infra.security.entrypoint.CustomBasicAuthenticationEntryPoint;
 import com.emazon.ms_stock.infra.security.entrypoint.CustomJWTEntryPoint;
 import com.emazon.ms_stock.infra.security.filter.JwtValidatorFilter;
@@ -21,9 +22,6 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private static final String AUX_DEPOT = "AUX_DEPOT";
-    private static final String ADMIN = "ADMIN";
-
     private final CustomBasicAuthenticationEntryPoint customBasicAuthenticationEntryPoint;
 
     @Bean
@@ -33,9 +31,10 @@ public class SecurityConfig {
             .httpBasic(httpBasic -> httpBasic.authenticationEntryPoint(customBasicAuthenticationEntryPoint))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> {
-                auth.requestMatchers(HttpMethod.POST, "/stock/articles/supply").hasRole(AUX_DEPOT);
-                auth.requestMatchers(HttpMethod.POST, "/stock/**").hasRole(ADMIN);
-                auth.requestMatchers(HttpMethod.GET, "/stock/**").permitAll();
+                auth.requestMatchers(HttpMethod.POST, ConsUtils.builderPath().withArticles().withSupply().build()).hasRole(ConsUtils.AUX_DEPOT);
+                auth.requestMatchers(HttpMethod.PUT, ConsUtils.builderPath().withArticles().build()).hasAnyRole(ConsUtils.CLIENT);
+                auth.requestMatchers(HttpMethod.POST, ConsUtils.builderPath().withAnything().build()).hasRole(ConsUtils.ADMIN);
+                auth.requestMatchers(HttpMethod.GET, ConsUtils.builderPath().withAnything().build()).permitAll();
 
                 auth.anyRequest().denyAll();
             });
