@@ -1,14 +1,13 @@
 package com.emazon.ms_stock.infra.out.jpa.adapter;
 
-import com.emazon.ms_stock.application.dto.PageDTO;
-import com.emazon.ms_stock.application.dto.PageHandler;
-import com.emazon.ms_stock.application.utils.ParsingUtils;
+import com.emazon.ms_stock.application.dto.handlers.PageDTO;
 import com.emazon.ms_stock.domain.model.Category;
 import com.emazon.ms_stock.domain.spi.ICategoryPersistencePort;
 import com.emazon.ms_stock.infra.out.jpa.entity.CategoryEntity;
 import com.emazon.ms_stock.infra.out.jpa.mapper.CategoryEntityMapper;
 import com.emazon.ms_stock.infra.out.jpa.repository.CategoryJpaRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,8 +24,8 @@ public class CategoryJpaAdapter implements ICategoryPersistencePort {
     }
 
     @Override
-    public PageDTO<Category> findAllPageable(PageHandler page) {
-        PageDTO<CategoryEntity> entityPages = categoryEntityMapper.toEntityPage(categoryJpaRepository.findAll(ParsingUtils.toPageable(page)));
+    public PageDTO<Category> findAllPageable(Pageable page) {
+        PageDTO<CategoryEntity> entityPages = categoryEntityMapper.toEntityPage(categoryJpaRepository.findAll(page));
         return categoryEntityMapper.toCategoryPage(entityPages);
     }
 

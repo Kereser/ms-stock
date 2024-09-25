@@ -2,10 +2,18 @@ package com.emazon.ms_stock.domain.use_cases;
 
 import com.emazon.ms_stock.ConsUtils;
 import com.emazon.ms_stock.application.dto.*;
+import com.emazon.ms_stock.application.dto.handlers.PageDTO;
+import com.emazon.ms_stock.application.dto.handlers.PageHandler;
+import com.emazon.ms_stock.application.dto.input.ArticleReqDTO;
+import com.emazon.ms_stock.application.dto.out.ArticlesPriceDTO;
 import com.emazon.ms_stock.domain.api.IArticleServicePort;
 import com.emazon.ms_stock.domain.model.Article;
 import com.emazon.ms_stock.domain.model.Brand;
 import com.emazon.ms_stock.domain.model.Category;
+import com.emazon.ms_stock.domain.model.sort.BasicSortStrategy;
+import com.emazon.ms_stock.domain.model.sort.CategoryBrandNameStrategy;
+import com.emazon.ms_stock.domain.model.sort.CategoryNameStrategy;
+import com.emazon.ms_stock.domain.model.sort.SortingStrategy;
 import com.emazon.ms_stock.domain.spi.IArticlePersistencePort;
 import com.emazon.ms_stock.domain.spi.IBrandPersistencePort;
 import com.emazon.ms_stock.domain.spi.ICategoryPersistencePort;
@@ -13,8 +21,8 @@ import com.emazon.ms_stock.infra.exception.ArticleCategoryQuantityException;
 import com.emazon.ms_stock.infra.exception.NoDataFoundException;
 import com.emazon.ms_stock.infra.exception.NotSufficientStock;
 import com.emazon.ms_stock.infra.out.jpa.entity.ArticleEntity;
-import org.springframework.data.domain.Sort;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -33,36 +41,63 @@ public class ArticleUseCase implements IArticleServicePort {
     }
 
     @Override
-    public void save(Article entity) {
-        List<Category> categories = categoryPersistencePort.findAllById(entity.getCategories().stream().map(Category::getId).toList());
+    public void save(Article article) {
+        completeArticle(article);
+        updateArticle(article);
 
-        if (categories.size() < entity.getCategories().size()) {
+        persistencePort.save(article);
+    }
+
+    private void completeArticle(Article article) {
+        article.setCategories(new HashSet<>(evaluateCategoriesToAssign(article)));
+        article.setBrand(evaluateBrandToAssign(article));
+    }
+
+    private List<Category> evaluateCategoriesToAssign(Article article) {
+        List<Category> categories = categoryPersistencePort.findAllById(article.getCategories().stream().map(Category::getId).toList());
+
+        if (categories.size() < article.getCategories().size()) {
             throw new NoDataFoundException(Article.class.getSimpleName(), ArticleReqDTO.Fields.categoryIds);
         }
 
-        Optional<Brand> brand = brandPersistencePort.findById(entity.getBrand().getId());
+        return categories;
+    }
+
+    private Brand evaluateBrandToAssign(Article article) {
+        Optional<Brand> brand = brandPersistencePort.findById(article.getBrand().getId());
 
         if (brand.isEmpty()) {
             throw new NoDataFoundException(Article.class.getSimpleName(), ArticleReqDTO.Fields.brandId);
         }
 
-        entity.setCategories(new HashSet<>(categories));
-        entity.setBrand(brand.get());
-
-        persistencePort.save(entity);
+        return brand.get();
     }
 
     @Override
     public PageDTO<Article> findAllPageable(PageHandler pageable) {
-        if (pageable.getColumn().equalsIgnoreCase(Article.INNER_SORT_CATEGORY_NAME)) {
-            if (pageable.getDirection().equalsIgnoreCase(Sort.Direction.ASC.toString())) {
-                return persistencePort.findAllByCategoryNameAsc(pageable);
-            }
+        SortingStrategy sortingStrategy = determineSortingStrategy(pageable);
 
-            return persistencePort.findAllByCategoryNameDesc(pageable);
+        return sortingStrategy.sort(pageable);
+    }
+
+    private SortingStrategy determineSortingStrategy(PageHandler pageable) {
+        if (isSortByCategoryBrandName(pageable.getColumn())) {
+            return new CategoryBrandNameStrategy(persistencePort);
         }
 
-        return persistencePort.findAllPageable(pageable);
+        if (isSortByCategoryName(pageable.getColumn())) {
+            return new CategoryNameStrategy(persistencePort);
+        }
+
+        return new BasicSortStrategy(persistencePort);
+    }
+
+    private boolean isSortByCategoryName(String column) {
+        return column.equalsIgnoreCase(ConsUtils.CATEGORY_PARAM_VALUE);
+    }
+
+    private boolean isSortByCategoryBrandName(String column) {
+        return column.split(",").length == ConsUtils.INTEGER_2;
     }
 
     @Override
@@ -76,6 +111,14 @@ public class ArticleUseCase implements IArticleServicePort {
         persistencePort.saveAll(articlesFound);
     }
 
+    private void addQuantityToArticle(Map<Long, Long> articleQuantityMap, Set<Article> articlesFound) {
+        articlesFound.forEach(a -> {
+            Long quantity = articleQuantityMap.get(a.getId());
+            a.addQuantityBySupply(quantity);
+            updateArticle(a);
+        });
+    }
+
     @Override
     public void handleCartAdditionValidations(Set<ItemQuantityDTO> itemQuantityDTOS) {
         Map<Long, Long> articleQuantityMap = getArticleQuantityMap(itemQuantityDTOS);
@@ -84,23 +127,6 @@ public class ArticleUseCase implements IArticleServicePort {
         handleNotFoundId(articleQuantityMap.keySet().size(), articlesFound.size());
         handleInsufficientStock(articlesFound, articleQuantityMap);
         handleArticleCategoryQuantityConstraint(articlesFound);
-    }
-
-    private void addQuantityToArticle(Map<Long, Long> articleQuantityMap, Set<Article> articlesFound) {
-        articlesFound.forEach(a -> {
-            Long quantity = articleQuantityMap.get(a.getId());
-            a.addQuantityBySupply(quantity);
-        });
-    }
-
-    private Map<Long, Long> getArticleQuantityMap(Set<ItemQuantityDTO> itemQuantityDTOS) {
-        return itemQuantityDTOS.stream().collect(Collectors.toMap(ItemQuantityDTO::getArticleId, ItemQuantityDTO::getQuantity));
-    }
-
-    private void handleNotFoundId(int fromReq, int fromDB) {
-        if (fromDB != fromReq) {
-            throw new NoDataFoundException(Article.class.getSimpleName(), ArticleEntity.Fields.id);
-        }
     }
 
     private void handleInsufficientStock(Set<Article> articlesFound, Map<Long, Long> map) {
@@ -114,14 +140,14 @@ public class ArticleUseCase implements IArticleServicePort {
     private void handleArticleCategoryQuantityConstraint(Set<Article> articles) {
         if (articles.size() <= 3) return;
 
-        Map<Long, Integer> hashMap = buildHashMap(articles);
+        Map<Long, Integer> hashMap = buildCategoryIdsHashMap(articles);
 
         if (hashMap.values().stream().anyMatch(c -> c > ConsUtils.INTEGER_3)) {
             throw new ArticleCategoryQuantityException(Article.class.getSimpleName(), ArticleEntity.Fields.categories);
         }
     }
 
-    private Map<Long, Integer> buildHashMap(Set<Article> articles) {
+    private Map<Long, Integer> buildCategoryIdsHashMap(Set<Article> articles) {
         Map<Long, Integer> hashMap = new HashMap<>();
         List<Long> categoriesId = new ArrayList<>();
 
@@ -129,5 +155,24 @@ public class ArticleUseCase implements IArticleServicePort {
         categoriesId.forEach(cId -> hashMap.compute(cId, (k, v) -> v == null ? ConsUtils.INTEGER_1 : v + ConsUtils.INTEGER_1));
 
         return hashMap;
+    }
+
+    private void updateArticle(Article articlesFound) {
+        articlesFound.setUpdatedAt(LocalDateTime.now());
+    }
+
+    private Map<Long, Long> getArticleQuantityMap(Set<ItemQuantityDTO> itemQuantityDTOS) {
+        return itemQuantityDTOS.stream().collect(Collectors.toMap(ItemQuantityDTO::getArticleId, ItemQuantityDTO::getQuantity));
+    }
+
+    private void handleNotFoundId(int fromReq, int fromDB) {
+        if (fromDB != fromReq) {
+            throw new NoDataFoundException(Article.class.getSimpleName(), ArticleEntity.Fields.id);
+        }
+    }
+
+    @Override
+    public Set<ArticlesPriceDTO> getArticlesPrice(Set<Long> articleIds) {
+        return persistencePort.getArticlesPrice(articleIds);
     }
 }

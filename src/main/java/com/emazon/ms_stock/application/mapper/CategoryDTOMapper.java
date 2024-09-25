@@ -1,8 +1,8 @@
 package com.emazon.ms_stock.application.mapper;
 
-import com.emazon.ms_stock.application.dto.CategoryReqDTO;
-import com.emazon.ms_stock.application.dto.CategoryResDTO;
-import com.emazon.ms_stock.application.dto.PageDTO;
+import com.emazon.ms_stock.application.dto.out.CategoryReqDTO;
+import com.emazon.ms_stock.application.dto.out.CategoryResDTO;
+import com.emazon.ms_stock.application.dto.handlers.PageDTO;
 import com.emazon.ms_stock.domain.model.Category;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;

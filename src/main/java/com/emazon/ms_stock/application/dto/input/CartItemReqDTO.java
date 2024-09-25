@@ -1,4 +1,4 @@
-package com.emazon.ms_stock.application.dto;
+package com.emazon.ms_stock.application.dto.input;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;

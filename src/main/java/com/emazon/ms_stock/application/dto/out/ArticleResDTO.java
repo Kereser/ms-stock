@@ -1,10 +1,11 @@
-package com.emazon.ms_stock.application.dto;
+package com.emazon.ms_stock.application.dto.out;
 
 import com.emazon.ms_stock.domain.model.Brand;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Getter
@@ -15,13 +16,7 @@ public class ArticleResDTO {
     private String description;
     private BigDecimal price;
     private Long quantity;
-    private Set<CategoryArticleRes> categories;
+    private Set<CategoryArticleResDTO> categories;
     private Brand brand;
-
-    @Getter
-    @Setter
-    public static class CategoryArticleRes {
-        private Long id;
-        private String name;
-    }
+    private LocalDateTime updatedAt;
 }

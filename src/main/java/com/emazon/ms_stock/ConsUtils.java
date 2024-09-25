@@ -1,5 +1,8 @@
 package com.emazon.ms_stock;
 
+import java.util.List;
+import java.util.Set;
+
 public class ConsUtils {
 
     private ConsUtils() {
@@ -56,13 +59,17 @@ public class ConsUtils {
     public static final Integer FIELD_WITH_ERRORS_AT_BRAND = 2;
     public static final Integer FIELD_WITH_ERRORS_AT_ARTICLE = 6;
 
+    public static final Long LONG_0 = 0L;
     public static final Long LONG_1 = 1L;
     public static final Long LONG_2 = 2L;
     public static final Long LONG_10 = 10L;
 
+    public static final Integer INTEGER_0 = 0;
     public static final Integer INTEGER_1 = 1;
     public static final Integer INTEGER_2 = 2;
     public static final Integer INTEGER_3 = 3;
+    public static final Integer INTEGER_4 = 4;
+    public static final Integer INTEGER_20 = 20;
 
     public static final String PLUS_FIFTY_CHARACTERS = "d".repeat(51);
     public static final String PLUS_NINETY_CHARACTERS = "d".repeat(91);
@@ -75,8 +82,19 @@ public class ConsUtils {
     public static final String SORT_DESC_VALUE = "DESC";
 
     public static final String NON_EXISTING_DIRECTION_COLUMN = "Non:existing:DIRECTION";
-    public static final String SORT_CATEGORY_NAME = "category:name";
     public static final String DIRECTION_PARAM = "direction";
+
+    public static final String CATEGORY_PARAM_VALUE = "category:name";
+    public static final String BRAND_PARAM_VALUE = "brand:name";
+    public static final String NAME_PARAM_VALUE = "name";
+    public static final String DESCRIPTION_PARAM_VALUE = "description";
+
+    public static final String ARTICLE_IDS = "articleIds";
+
+    public static final List<String> PARAMS_FOR_ARTICLES_ON_CART = List.of(CATEGORY_PARAM_VALUE,
+            NAME_PARAM_VALUE,
+            DESCRIPTION_PARAM_VALUE);
+    public static final Set<String> COMBINED_PARAMS_FOR_ARTICLE = Set.of(CATEGORY_PARAM_VALUE, BRAND_PARAM_VALUE);
 
     public static final String BASIC_URL = "/stock";
 
@@ -93,6 +111,11 @@ public class ConsUtils {
             return this;
         }
 
+        public PathBuilder withArticlesIds() {
+            this.finalPath += "/{articleIds}";
+            return this;
+        }
+
         public PathBuilder withCategories() {
             this.finalPath += "/categories";
             return this;
@@ -100,6 +123,11 @@ public class ConsUtils {
 
         public PathBuilder withBrands() {
             this.finalPath += "/brands";
+            return this;
+        }
+
+        public PathBuilder withCart() {
+            this.finalPath += "/carts";
             return this;
         }
 

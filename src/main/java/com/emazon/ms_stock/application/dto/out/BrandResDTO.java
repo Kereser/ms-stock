@@ -1,4 +1,4 @@
-package com.emazon.ms_stock.application.dto;
+package com.emazon.ms_stock.application.dto.out;
 
 import lombok.Getter;
 import lombok.Setter;

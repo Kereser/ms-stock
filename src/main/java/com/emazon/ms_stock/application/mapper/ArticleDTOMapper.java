@@ -1,8 +1,9 @@
 package com.emazon.ms_stock.application.mapper;
 
-import com.emazon.ms_stock.application.dto.ArticleReqDTO;
-import com.emazon.ms_stock.application.dto.ArticleResDTO;
-import com.emazon.ms_stock.application.dto.PageDTO;
+import com.emazon.ms_stock.application.dto.input.ArticleReqDTO;
+import com.emazon.ms_stock.application.dto.out.ArticleResDTO;
+import com.emazon.ms_stock.application.dto.out.CategoryArticleResDTO;
+import com.emazon.ms_stock.application.dto.handlers.PageDTO;
 import com.emazon.ms_stock.domain.model.Article;
 import com.emazon.ms_stock.domain.model.Category;
 import com.emazon.ms_stock.infra.out.jpa.mapper.BrandEntityMapper;
@@ -18,15 +19,14 @@ import org.mapstruct.ReportingPolicy;
 public interface ArticleDTOMapper {
     @Mapping(source = "categoryIds", target = "categories")
     @Mapping(source = "brandId", target = "brand")
-    Article toArticle(ArticleReqDTO dto);
+    Article articleResDTOToArticle(ArticleReqDTO dto);
 
-    ArticleResDTO toResDTO(Article article);
-    PageDTO<ArticleResDTO> toPageResDTO(PageDTO<Article> pageArticle);
+    PageDTO<ArticleResDTO> articlePageToArticleResPage(PageDTO<Article> pageArticle);
 
-    default ArticleResDTO.CategoryArticleRes map(Category category) {
+    default CategoryArticleResDTO map(Category category) {
         if (category == null) return null;
 
-        ArticleResDTO.CategoryArticleRes categoryArticleRes = new ArticleResDTO.CategoryArticleRes();
+        CategoryArticleResDTO categoryArticleRes = new CategoryArticleResDTO();
         categoryArticleRes.setId(category.getId());
         categoryArticleRes.setName(category.getName());
 

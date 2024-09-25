@@ -2,6 +2,9 @@ package com.emazon.ms_stock.infra.input.rest;
 
 import com.emazon.ms_stock.ConsUtils;
 import com.emazon.ms_stock.application.dto.*;
+import com.emazon.ms_stock.application.dto.input.ArticleReqDTO;
+import com.emazon.ms_stock.application.dto.input.BrandReqDTO;
+import com.emazon.ms_stock.application.dto.out.CategoryReqDTO;
 import com.emazon.ms_stock.application.handler.IStockHandler;
 import com.emazon.ms_stock.application.mapper.ArticleDTOMapper;
 import com.emazon.ms_stock.domain.model.Article;
@@ -38,6 +41,7 @@ import java.math.BigDecimal;
 import java.util.*;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -183,14 +187,14 @@ class StockControllerIntegrationTest {
         sentPostToCreateEntity(mapper.writeValueAsString(articleReqDTO), ConsUtils.builderPath().withArticles().build()).andExpect(status().isCreated());
 
         mockMvc.perform(MockMvcRequestBuilders.get(ConsUtils.builderPath().withArticles().build())
-                        .param(ConsUtils.COLUMN_PARAM, ConsUtils.SORT_CATEGORY_NAME)
+                        .param(ConsUtils.COLUMN_PARAM, ConsUtils.CATEGORY_PARAM_VALUE)
                         .param(ConsUtils.DIRECTION_PARAM, ConsUtils.SORT_ASC_VALUE))
                     .andExpect(jsonPath(ConsUtils.FIELD_CONTENT, Matchers.iterableWithSize(ConsUtils.INTEGER_2)))
                     .andExpect(jsonPath(ConsUtils.FIELD_TOTAL_ELEMENTS).value(ConsUtils.INTEGER_2))
                     .andExpect(jsonPath(ConsUtils.NAME_OF_FIRST_CATEGORY_ON_ARTICLE).value(ConsUtils.TEST_NAME));
 
         ResultActions res = mockMvc.perform(MockMvcRequestBuilders.get(ConsUtils.builderPath().withArticles().build())
-                        .param(ConsUtils.COLUMN_PARAM, ConsUtils.SORT_CATEGORY_NAME)
+                        .param(ConsUtils.COLUMN_PARAM, ConsUtils.CATEGORY_PARAM_VALUE)
                         .param(ConsUtils.DIRECTION_PARAM, ConsUtils.SORT_DESC_VALUE))
                 .andExpect(jsonPath(ConsUtils.FIELD_CONTENT, Matchers.iterableWithSize(ConsUtils.INTEGER_2)))
                 .andExpect(jsonPath(ConsUtils.FIELD_TOTAL_ELEMENTS).value(ConsUtils.INTEGER_2))
@@ -271,6 +275,7 @@ class StockControllerIntegrationTest {
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
     void Should_ThrowsException_When_NotValidConstraintArticleCategoryQuantity() throws Exception {
         createArticle();
         saveThreeArticlesOfSameCategory();
@@ -294,6 +299,38 @@ class StockControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(itemsReqDTO))
                         .header(ConsUtils.AUTHORIZATION, ConsUtils.BEARER + getClientToken()))
+                .andExpect(status().isOk());
+    }
+
+    /*** Get all cart items ***/
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
+    void Should_GetAllCartItems_When_ValidParams() throws Exception {
+        createArticle();
+
+        mockMvc.perform(get(ConsUtils.builderPath().withCart().withArticles().withArticlesIds().build(), ConsUtils.LONG_1))
+                .andExpect(jsonPath(ConsUtils.FIELD_TOTAL_ELEMENTS).value(ConsUtils.LONG_1))
+                .andExpect(status().isOk());
+
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
+    void Should_Return200_When_IdsNotFound() throws Exception {
+        createArticle();
+
+        mockMvc.perform(get(ConsUtils.builderPath().withCart().withArticles().withArticlesIds().build(), ConsUtils.LONG_0))
+                .andExpect(jsonPath(ConsUtils.FIELD_TOTAL_ELEMENTS).value(ConsUtils.INTEGER_0))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
+    void Should_Return200_When_GetAllArticlesWithPrice() throws Exception {
+        createArticle();
+
+        mockMvc.perform(get(ConsUtils.builderPath().withArticles().withArticlesIds().build(), ConsUtils.LONG_1))
+                .andExpect(jsonPath(ConsUtils.BASE_MATCHER, Matchers.hasSize(ConsUtils.INTEGER_1)))
                 .andExpect(status().isOk());
     }
 

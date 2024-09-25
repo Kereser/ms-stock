@@ -1,4 +1,4 @@
-package com.emazon.ms_stock.application.dto;
+package com.emazon.ms_stock.application.dto.handlers;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
