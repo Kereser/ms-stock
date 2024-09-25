@@ -1,4 +1,4 @@
-package com.emazon.ms_stock.application.dto;
+package com.emazon.ms_stock.application.dto.out;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -6,15 +6,16 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+@Builder
 @Getter
 @Setter
-@Builder
-public class BrandReqDTO {
+public class CategoryReqDTO {
+
     @NotBlank
-    @Size(min = 3, max = 50)
+    @Size(max = 50, min = 3)
     private String name;
 
     @NotBlank
-    @Size(min = 3, max = 120)
+    @Size(max = 90, min = 3)
     private String description;
 }
