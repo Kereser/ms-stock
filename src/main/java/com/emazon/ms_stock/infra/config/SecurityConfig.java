@@ -35,6 +35,8 @@ public class SecurityConfig {
                 auth.requestMatchers(HttpMethod.PUT, ConsUtils.builderPath().withArticles().build()).hasAnyRole(ConsUtils.CLIENT);
                 auth.requestMatchers(HttpMethod.POST, ConsUtils.builderPath().withAnything().build()).hasRole(ConsUtils.ADMIN);
                 auth.requestMatchers(HttpMethod.GET, ConsUtils.builderPath().withAnything().build()).permitAll();
+                auth.requestMatchers(HttpMethod.GET, ConsUtils.builderPath().withCart().withArticles().withArticlesIds().build()).permitAll();
+                auth.requestMatchers(HttpMethod.GET, ConsUtils.builderPath().withArticles().withArticlesIds().build()).permitAll();
 
                 auth.anyRequest().denyAll();
             });
