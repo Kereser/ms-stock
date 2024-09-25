@@ -14,7 +14,7 @@ public class Article {
     private Set<Category> categories;
     private Brand brand;
     private LocalDateTime createdAt = LocalDateTime.now();
-    private LocalDateTime updateAt = LocalDateTime.now();
+    private LocalDateTime updatedAt = LocalDateTime.now();
 
     public Article() {
     }
@@ -104,7 +104,15 @@ public class Article {
         return createdAt;
     }
 
-    public LocalDateTime getUpdateAt() {
-        return updateAt;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

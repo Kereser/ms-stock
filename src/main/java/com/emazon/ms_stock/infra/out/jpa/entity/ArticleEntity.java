@@ -3,9 +3,6 @@ package com.emazon.ms_stock.infra.out.jpa.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldNameConstants;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -50,13 +47,12 @@ public class ArticleEntity {
     @JoinColumn(name = "brand_id")
     private BrandEntity brand;
 
-    @CreatedDate
     @Builder.Default
     @Column(updatable = false, nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    @LastModifiedDate
     @Builder.Default
+    @Column(nullable = false)
     private LocalDateTime updatedAt = LocalDateTime.now();
 
     public void addCategories(Set<CategoryEntity> cg) {
