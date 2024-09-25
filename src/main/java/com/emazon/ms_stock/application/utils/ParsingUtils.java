@@ -1,11 +1,14 @@
 package com.emazon.ms_stock.application.utils;
 
-import com.emazon.ms_stock.application.dto.PageHandler;
+import com.emazon.ms_stock.ConsUtils;
+import com.emazon.ms_stock.application.dto.handlers.PageHandler;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class ParsingUtils {
     private static final List<String> VALID_DIRECTIONS = List.of("asc", "desc");
@@ -13,10 +16,20 @@ public class ParsingUtils {
     private ParsingUtils() {
     }
 
-    public static Pageable toPageable(PageHandler page) {
-        Sort.Direction dir = page.getDirection().equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+    public static PageHandler getHandlerFromParams(String direction, Integer pageSize, Integer page, String column) {
+        return new PageHandler(ParsingUtils.getSortDirectionOrDefault(direction), pageSize, page, column);
+    }
 
-        return PageRequest.of(page.getPage(), page.getPageSize(), Sort.by(dir, page.getColumn()));
+    public static PageHandler getHandlerFromParams(String direction, Integer pageSize, Integer page, String column, Map<String, Set<Long>> filters) {
+        return new PageHandler(ParsingUtils.getSortDirectionOrDefault(direction), pageSize, page, column, filters);
+    }
+
+    public static Pageable toPageable(PageHandler page) {
+        return PageRequest.of(page.getPage(), page.getPageSize(), getDirection(page.getDirection()), page.getColumn());
+    }
+
+    private static Sort.Direction getDirection(String direction) {
+        return direction.equalsIgnoreCase(ConsUtils.SORT_ASC_VALUE) ? Sort.Direction.ASC : Sort.Direction.DESC;
     }
 
     public static Pageable toPageableUnsorted(PageHandler page) {
