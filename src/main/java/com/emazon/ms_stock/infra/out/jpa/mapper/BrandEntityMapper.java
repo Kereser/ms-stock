@@ -1,6 +1,6 @@
 package com.emazon.ms_stock.infra.out.jpa.mapper;
 
-import com.emazon.ms_stock.application.dto.PageDTO;
+import com.emazon.ms_stock.application.dto.handlers.PageDTO;
 import com.emazon.ms_stock.domain.model.Brand;
 import com.emazon.ms_stock.infra.out.jpa.entity.BrandEntity;
 import org.mapstruct.Mapper;
