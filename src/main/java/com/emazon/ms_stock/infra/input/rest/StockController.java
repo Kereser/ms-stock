@@ -1,7 +1,11 @@
 package com.emazon.ms_stock.infra.input.rest;
 
-import com.emazon.ms_stock.application.dto.*;
+import com.emazon.ms_stock.ConsUtils;
 import com.emazon.ms_stock.application.dto.ItemsReqDTO;
+import com.emazon.ms_stock.application.dto.handlers.PageDTO;
+import com.emazon.ms_stock.application.dto.input.ArticleReqDTO;
+import com.emazon.ms_stock.application.dto.input.BrandReqDTO;
+import com.emazon.ms_stock.application.dto.out.*;
 import com.emazon.ms_stock.application.handler.IStockHandler;
 import com.emazon.ms_stock.infra.SortOrder;
 import jakarta.validation.Valid;
@@ -10,8 +14,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Set;
+
 @RestController
-@RequestMapping("/stock")
+@RequestMapping(ConsUtils.BASIC_URL)
 @RequiredArgsConstructor
 public class StockController {
 
@@ -72,5 +78,20 @@ public class StockController {
     public ResponseEntity<Void> handleCartAdditionValidations(@RequestBody @Valid ItemsReqDTO itemsReqDTO) {
         stockHandler.handleCartAdditionValidations(itemsReqDTO.getItems());
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @GetMapping("/carts/articles/{articleIds}")
+    public ResponseEntity<PageDTO<ArticleResDTO>> getCartArticles(
+            @RequestParam(defaultValue = "ASC") SortOrder direction,
+            @RequestParam(defaultValue = "20") Integer pageSize,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "name") String columns,
+            @PathVariable Set<Long> articleIds) {
+        return ResponseEntity.ok().body(stockHandler.getArticlesForCart(direction.name(), pageSize, page, columns, articleIds));
+    }
+
+    @GetMapping("/articles/{articleIds}")
+    public ResponseEntity<Set<ArticlesPriceDTO>> getArticlesWithPrice(@PathVariable Set<Long> articleIds) {
+        return ResponseEntity.ok().body(stockHandler.getArticlesPrice(articleIds));
     }
 }
