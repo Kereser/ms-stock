@@ -1,8 +1,9 @@
 package com.emazon.ms_stock.domain.use_cases;
 
 import com.emazon.ms_stock.ConsUtils;
+import com.emazon.ms_stock.TestCreationUtils;
 import com.emazon.ms_stock.application.dto.ItemQuantityDTO;
-import com.emazon.ms_stock.application.dto.PageHandler;
+import com.emazon.ms_stock.application.dto.handlers.PageHandler;
 import com.emazon.ms_stock.domain.model.Article;
 import com.emazon.ms_stock.domain.model.Brand;
 import com.emazon.ms_stock.domain.model.Category;
@@ -72,62 +73,88 @@ class ArticleUseCaseTest {
         Article ar = createArticleWithCategoryAndBrand();
         articleUseCase.save(ar);
 
-        Mockito.verify(brandPersistencePort, Mockito.times(1)).findById(Mockito.any());
-        Mockito.verify(articlePersistencePort, Mockito.times(1)).save(ar);
+        Mockito.verify(brandPersistencePort, Mockito.times(ConsUtils.INTEGER_1)).findById(Mockito.any());
+        Mockito.verify(articlePersistencePort, Mockito.times(ConsUtils.INTEGER_1)).save(ar);
         Assertions.assertEquals(1, ar.getCategories().size());
     }
 
     @Test
     void Should_InteractWithCorrectMethods_DependingOn_ColumnAndDirectionOnPayload() {
         PageHandler page = getBasicPageAsc(Sort.Direction.ASC);
-        page.setColumn("name");
         articleUseCase.findAllPageable(page);
 
-        Mockito.verify(articlePersistencePort, Mockito.times(1)).findAllPageable(Mockito.any());
-        Mockito.verify(articlePersistencePort, Mockito.times(0)).findAllByCategoryNameAsc(Mockito.any());
-        Mockito.verify(articlePersistencePort, Mockito.times(0)).findAllByCategoryNameDesc(Mockito.any());
+        Mockito.verify(articlePersistencePort, Mockito.times(ConsUtils.INTEGER_1)).findAllByArticleIdPageable(Mockito.any(), Mockito.any());
+        Mockito.verify(articlePersistencePort, Mockito.times(ConsUtils.INTEGER_0)).findAllByCategoryNameAsc(Mockito.any(), Mockito.any());
+        Mockito.verify(articlePersistencePort, Mockito.times(ConsUtils.INTEGER_0)).findAllByCategoryNameDesc(Mockito.any(), Mockito.any());
 
         Mockito.reset(articlePersistencePort);
         page.setColumn(Article.INNER_SORT_CATEGORY_NAME);
         articleUseCase.findAllPageable(page);
 
-        Mockito.verify(articlePersistencePort, Mockito.times(1)).findAllByCategoryNameAsc(Mockito.any());
-        Mockito.verify(articlePersistencePort, Mockito.times(0)).findAllPageable(Mockito.any());
-        Mockito.verify(articlePersistencePort, Mockito.times(0)).findAllByCategoryNameDesc(Mockito.any());
+        Mockito.verify(articlePersistencePort, Mockito.times(ConsUtils.INTEGER_1)).findAllByCategoryNameAsc(Mockito.any(), Mockito.any());
+        Mockito.verify(articlePersistencePort, Mockito.times(ConsUtils.INTEGER_0)).findAllByArticleIdPageable(Mockito.any(), Mockito.any());
+        Mockito.verify(articlePersistencePort, Mockito.times(ConsUtils.INTEGER_0)).findAllByCategoryNameDesc(Mockito.any(), Mockito.any());
 
         Mockito.reset(articlePersistencePort);
         page = getBasicPageAsc(Sort.Direction.DESC);
         page.setColumn(Article.INNER_SORT_CATEGORY_NAME);
         articleUseCase.findAllPageable(page);
 
-        Mockito.verify(articlePersistencePort, Mockito.times(1)).findAllByCategoryNameDesc(Mockito.any());
-        Mockito.verify(articlePersistencePort, Mockito.times(0)).findAllPageable(Mockito.any());
-        Mockito.verify(articlePersistencePort, Mockito.times(0)).findAllByCategoryNameAsc(Mockito.any());
+        Mockito.verify(articlePersistencePort, Mockito.times(ConsUtils.INTEGER_1)).findAllByCategoryNameDesc(Mockito.any(), Mockito.any());
+        Mockito.verify(articlePersistencePort, Mockito.times(ConsUtils.INTEGER_0)).findAllByArticleIdPageable(Mockito.any(), Mockito.any());
+        Mockito.verify(articlePersistencePort, Mockito.times(ConsUtils.INTEGER_0)).findAllByCategoryNameAsc(Mockito.any(), Mockito.any());
+    }
+
+    @Test
+    void Should_ThrowsException_When_NotArticleFound() {
+        Set<ItemQuantityDTO> itemsDTO = Set.of(TestCreationUtils.createItemQuantity());
+        Assertions.assertThrows(NoDataFoundException.class, () -> articleUseCase.addSupply(itemsDTO));
+
+        Mockito.verify(articlePersistencePort, Mockito.times(ConsUtils.INTEGER_0)).save(Mockito.any());
+    }
+
+    @Test
+    void Should_PassValidations_When_ValidPayload() {
+        Set<ItemQuantityDTO> itemsDTO = Set.of(TestCreationUtils.createItemQuantity());
+
+        Mockito.doReturn(List.of(TestCreationUtils.createArticle())).when(articlePersistencePort).findAllById(Mockito.any());
+        articleUseCase.addSupply(itemsDTO);
+
+        Mockito.verify(articlePersistencePort, Mockito.times(ConsUtils.INTEGER_0)).save(Mockito.any());
     }
 
     @Test
     void Should_ThrowsException_When_IdNotFound() {
-        Mockito.doReturn(createArticles(1)).when(articlePersistencePort).findAllById(Mockito.any());
+        Mockito.doReturn(createArticles(ConsUtils.INTEGER_1)).when(articlePersistencePort).findAllById(Mockito.any());
 
-        Set<ItemQuantityDTO> itemsSet = getItemsQuantityDTO(2);
+        Set<ItemQuantityDTO> itemsSet = getItemsQuantityDTO(ConsUtils.INTEGER_2);
         Assertions.assertThrows(NoDataFoundException.class, () -> articleUseCase.handleCartAdditionValidations(itemsSet));
     }
 
     @Test
     void Should_ThrowsException_When_NotEnoughStock() {
-        Mockito.doReturn(createArticles(1)).when(articlePersistencePort).findAllById(Mockito.any());
+        Mockito.doReturn(createArticles(ConsUtils.INTEGER_1)).when(articlePersistencePort).findAllById(Mockito.any());
 
-        Set<ItemQuantityDTO> itemsSet = getItemsQuantityDTO(1);
+        Set<ItemQuantityDTO> itemsSet = getItemsQuantityDTO(ConsUtils.INTEGER_1);
         itemsSet.stream().findFirst().orElse(ItemQuantityDTO.builder().build()).setQuantity(ConsUtils.LONG_10);
         Assertions.assertThrows(NotSufficientStock.class, () -> articleUseCase.handleCartAdditionValidations(itemsSet));
     }
 
     @Test
     void Should_ThrowsException_When_NotMeetArticleCategoryConstraints() {
-        Mockito.doReturn(createArticles(4)).when(articlePersistencePort).findAllById(Mockito.any());
+        Mockito.doReturn(createArticles(ConsUtils.INTEGER_4)).when(articlePersistencePort).findAllById(Mockito.any());
 
-        Set<ItemQuantityDTO> itemsSet = getItemsQuantityDTO(4);
+        Set<ItemQuantityDTO> itemsSet = getItemsQuantityDTO(ConsUtils.INTEGER_4);
         Assertions.assertThrows(ArticleCategoryQuantityException.class, () -> articleUseCase.handleCartAdditionValidations(itemsSet));
+    }
+
+    @Test
+    void Should_HaveValidInteractions_When_ValidPayload() {
+        PageHandler page = getBasicPageAsc(Sort.Direction.ASC);
+        page.setColumn(ConsUtils.CATEGORY_PARAM_VALUE + "," + ConsUtils.BRAND_PARAM_VALUE);
+        articleUseCase.findAllPageable(page);
+
+        Mockito.verify(articlePersistencePort, Mockito.times(ConsUtils.INTEGER_1)).findAllByArticleIdsAndCategoryAndBrandNameAsc(Mockito.any(), Mockito.any());
     }
 
     private Set<ItemQuantityDTO> getItemsQuantityDTO(Integer quantity) {
@@ -185,10 +212,11 @@ class ArticleUseCaseTest {
 
     private PageHandler getBasicPageAsc(Sort.Direction dir) {
         return PageHandler.builder()
-                .column("")
-                .page(0)
-                .pageSize(20)
+                .column(ConsUtils.NAME_PARAM_VALUE)
+                .page(ConsUtils.INTEGER_0)
+                .pageSize(ConsUtils.INTEGER_20)
                 .direction(dir.toString())
+                .filters(Map.of())
                 .build();
     }
 }

@@ -2,6 +2,9 @@ package com.emazon.ms_stock.infra.input.rest;
 
 import com.emazon.ms_stock.ConsUtils;
 import com.emazon.ms_stock.application.dto.*;
+import com.emazon.ms_stock.application.dto.input.ArticleReqDTO;
+import com.emazon.ms_stock.application.dto.input.BrandReqDTO;
+import com.emazon.ms_stock.application.dto.out.CategoryReqDTO;
 import com.emazon.ms_stock.application.handler.StockHandler;
 import com.emazon.ms_stock.infra.exception_handler.ExceptionResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
