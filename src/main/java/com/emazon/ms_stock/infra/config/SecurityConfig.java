@@ -32,11 +32,17 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> {
                 auth.requestMatchers(HttpMethod.POST, ConsUtils.builderPath().withArticles().withSupply().build()).hasRole(ConsUtils.AUX_DEPOT);
-                auth.requestMatchers(HttpMethod.PUT, ConsUtils.builderPath().withArticles().build()).hasAnyRole(ConsUtils.CLIENT);
-                auth.requestMatchers(HttpMethod.POST, ConsUtils.builderPath().withAnything().build()).hasRole(ConsUtils.ADMIN);
-                auth.requestMatchers(HttpMethod.GET, ConsUtils.builderPath().withAnything().build()).permitAll();
-                auth.requestMatchers(HttpMethod.GET, ConsUtils.builderPath().withCart().withArticles().withArticlesIds().build()).permitAll();
+
+                auth.requestMatchers(HttpMethod.POST, ConsUtils.builderPath().withCart().withArticles().build()).hasRole(ConsUtils.CLIENT);
+                auth.requestMatchers(HttpMethod.POST, ConsUtils.builderPath().withCart().withArticles().withPurchase().build()).hasRole(ConsUtils.CLIENT);
+                auth.requestMatchers(HttpMethod.POST, ConsUtils.builderPath().withCart().withArticles().withRollback().build()).hasRole(ConsUtils.CLIENT);
+
+                auth.requestMatchers(HttpMethod.GET, ConsUtils.builderPath().withCart().withArticles().withArticlesIds().build()).hasRole(ConsUtils.CLIENT);
+                auth.requestMatchers(HttpMethod.POST, ConsUtils.builderPath().withArticles().withAll().build()).hasRole(ConsUtils.CLIENT);
                 auth.requestMatchers(HttpMethod.GET, ConsUtils.builderPath().withArticles().withArticlesIds().build()).permitAll();
+
+                auth.requestMatchers(HttpMethod.GET, ConsUtils.builderPath().withAnything().build()).permitAll();
+                auth.requestMatchers(HttpMethod.POST, ConsUtils.builderPath().withAnything().build()).hasRole(ConsUtils.ADMIN);
 
                 auth.anyRequest().denyAll();
             });
