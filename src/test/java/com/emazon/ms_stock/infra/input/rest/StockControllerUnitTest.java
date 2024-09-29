@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Set;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -157,14 +158,14 @@ class StockControllerUnitTest {
     @Test
     @WithMockUser(roles = ConsUtils.CLIENT)
     void Should_ThrowsException_When_NotValidFieldsForCart() throws Exception {
-        mockMvc.perform(put(ConsUtils.builderPath().withArticles().build(), ConsUtils.INTEGER_1)
+        mockMvc.perform(post(ConsUtils.builderPath().withCart().withArticles().build())
                         .content(mapper.writeValueAsString(ItemsReqDTO.builder().build()))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath(ConsUtils.FIELD_MESSAGE).value(ExceptionResponse.FIELD_VALIDATION_ERRORS))
                 .andExpect(jsonPath(ConsUtils.FIELD_ITEMS).value(ExceptionResponse.NOT_NULL))
                 .andExpect(status().isBadRequest());
 
-        mockMvc.perform(put(ConsUtils.builderPath().withArticles().build(), ConsUtils.INTEGER_1)
+        mockMvc.perform(post(ConsUtils.builderPath().withCart().withArticles().build())
                         .content(mapper.writeValueAsString(ItemsReqDTO.builder().items(Set.of(ItemQuantityDTO.builder().build())).build()))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath(ConsUtils.FIELD_MESSAGE).value(ExceptionResponse.FIELD_VALIDATION_ERRORS))
@@ -176,7 +177,7 @@ class StockControllerUnitTest {
     @Test
     @WithMockUser(roles = ConsUtils.CLIENT)
     void Should_ThrowsException_When_NotBodyForCart() throws Exception {
-        mockMvc.perform(put(ConsUtils.builderPath().withArticles().build(), ConsUtils.INTEGER_1))
+        mockMvc.perform(post(ConsUtils.builderPath().withCart().withArticles().build()))
                 .andExpect(jsonPath(ConsUtils.FIELD_MESSAGE).value(ConsUtils.REQUIRED_BODY))
                 .andExpect(status().isBadRequest());
     }
@@ -190,7 +191,7 @@ class StockControllerUnitTest {
 
     @Test
     void Should_ThrowsException_When_NotAuthenticatedForCart() throws Exception {
-        mockMvc.perform(put(ConsUtils.builderPath().withArticles().build(), ConsUtils.INTEGER_1))
+        mockMvc.perform(post(ConsUtils.builderPath().withCart().withArticles().build()))
                 .andExpect(status().isUnauthorized());
     }
 
