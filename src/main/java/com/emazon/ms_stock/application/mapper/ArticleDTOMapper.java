@@ -12,6 +12,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring",
         uses = {CategoryEntityMapper.class, BrandEntityMapper.class},
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
@@ -20,6 +22,8 @@ public interface ArticleDTOMapper {
     @Mapping(source = "categoryIds", target = "categories")
     @Mapping(source = "brandId", target = "brand")
     Article articleResDTOToArticle(ArticleReqDTO dto);
+
+    List<ArticleResDTO> articlesToArticlesResDTOs(List<Article> article);
 
     PageDTO<ArticleResDTO> articlePageToArticleResPage(PageDTO<Article> pageArticle);
 
