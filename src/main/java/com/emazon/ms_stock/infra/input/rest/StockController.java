@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -31,10 +32,10 @@ public class StockController {
 
     @GetMapping("/categories")
     public ResponseEntity<PageDTO<CategoryResDTO>> getAllCategories(
-            @RequestParam(defaultValue = "ASC") SortOrder direction,
-            @RequestParam(defaultValue = "20") Integer pageSize,
-            @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "name") String column) {
+            @RequestParam(defaultValue = ConsUtils.ASC) SortOrder direction,
+            @RequestParam(defaultValue = ConsUtils.INTEGER_STR_20) Integer pageSize,
+            @RequestParam(defaultValue = ConsUtils.INTEGER_STR_0) Integer page,
+            @RequestParam(defaultValue = ConsUtils.NAME) String column) {
         return ResponseEntity.ok().body(stockHandler.getAllCategories(direction.name(), pageSize, page, column));
     }
 
@@ -46,10 +47,10 @@ public class StockController {
 
     @GetMapping("/brands")
     public ResponseEntity<PageDTO<BrandResDTO>> getAllBrandsPaged(
-            @RequestParam(defaultValue = "ASC") SortOrder direction,
-            @RequestParam(defaultValue = "20") Integer pageSize,
-            @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "name") String column) {
+            @RequestParam(defaultValue = ConsUtils.ASC) SortOrder direction,
+            @RequestParam(defaultValue = ConsUtils.INTEGER_STR_20) Integer pageSize,
+            @RequestParam(defaultValue = ConsUtils.INTEGER_STR_0) Integer page,
+            @RequestParam(defaultValue = ConsUtils.NAME) String column) {
         return ResponseEntity.ok().body(stockHandler.getAllBrands(direction.name(), pageSize, page, column));
     }
 
@@ -61,10 +62,10 @@ public class StockController {
 
     @GetMapping("/articles")
     public ResponseEntity<PageDTO<ArticleResDTO>> getAllArticles(
-            @RequestParam(defaultValue = "ASC") SortOrder direction,
-            @RequestParam(defaultValue = "20") Integer pageSize,
-            @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "name") String column) {
+            @RequestParam(defaultValue = ConsUtils.ASC) SortOrder direction,
+            @RequestParam(defaultValue = ConsUtils.INTEGER_STR_20) Integer pageSize,
+            @RequestParam(defaultValue = ConsUtils.INTEGER_STR_0) Integer page,
+            @RequestParam(defaultValue = ConsUtils.NAME) String column) {
         return ResponseEntity.ok().body(stockHandler.getAllArticles(direction.name(), pageSize, page, column));
     }
 
@@ -74,18 +75,18 @@ public class StockController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PutMapping("/articles")
-    public ResponseEntity<Void> handleCartAdditionValidations(@RequestBody @Valid ItemsReqDTO itemsReqDTO) {
-        stockHandler.handleCartAdditionValidations(itemsReqDTO.getItems());
+    @PostMapping(ConsUtils.VALIDATE_CART_URL)
+    public ResponseEntity<Void> validationsOnStockForCart(@RequestBody @Valid ItemsReqDTO itemsReqDTO) {
+        stockHandler.validationsOnStockForCart(itemsReqDTO.getItems());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @GetMapping("/carts/articles/{articleIds}")
+    @GetMapping("/cart/articles/{articleIds}")
     public ResponseEntity<PageDTO<ArticleResDTO>> getCartArticles(
-            @RequestParam(defaultValue = "ASC") SortOrder direction,
-            @RequestParam(defaultValue = "20") Integer pageSize,
-            @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "name") String columns,
+            @RequestParam(defaultValue = ConsUtils.ASC) SortOrder direction,
+            @RequestParam(defaultValue = ConsUtils.INTEGER_STR_20) Integer pageSize,
+            @RequestParam(defaultValue = ConsUtils.INTEGER_STR_0) Integer page,
+            @RequestParam(defaultValue = ConsUtils.NAME) String columns,
             @PathVariable Set<Long> articleIds) {
         return ResponseEntity.ok().body(stockHandler.getArticlesForCart(direction.name(), pageSize, page, columns, articleIds));
     }
@@ -93,5 +94,22 @@ public class StockController {
     @GetMapping("/articles/{articleIds}")
     public ResponseEntity<Set<ArticlesPriceDTO>> getArticlesWithPrice(@PathVariable Set<Long> articleIds) {
         return ResponseEntity.ok().body(stockHandler.getArticlesPrice(articleIds));
+    }
+
+    @PostMapping(ConsUtils.PROCESS_CART_PURCHASE_URL)
+    public ResponseEntity<Void> processStockReduction(@RequestBody @Valid ItemsReqDTO itemsReqDTO) {
+        stockHandler.processStockReduction(itemsReqDTO);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping(ConsUtils.PROCESS_CART_ROLLBACK_URL)
+    public ResponseEntity<Void> processCartRollback(@RequestBody @Valid ItemsReqDTO itemsReqDTO) {
+        stockHandler.processRollback(itemsReqDTO);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping(ConsUtils.GET_ALL_ARTICLES)
+    public ResponseEntity<List<ArticleResDTO>> getAllArticles(@RequestBody @Valid ItemsReqDTO itemsReqDTO) {
+        return ResponseEntity.ok().body(stockHandler.getAllArticles(itemsReqDTO));
     }
 }
