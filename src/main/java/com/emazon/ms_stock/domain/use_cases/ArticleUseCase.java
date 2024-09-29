@@ -120,21 +120,25 @@ public class ArticleUseCase implements IArticleServicePort {
     }
 
     @Override
-    public void handleCartAdditionValidations(Set<ItemQuantityDTO> itemQuantityDTOS) {
+    public void validationsOnStockForCart(Set<ItemQuantityDTO> itemQuantityDTOS) {
         Map<Long, Long> articleQuantityMap = getArticleQuantityMap(itemQuantityDTOS);
-        Set<Article> articlesFound = new HashSet<>(persistencePort.findAllById(articleQuantityMap.keySet()));
+        Set<Article> articlesFound = findArticlesById(articleQuantityMap.keySet());
 
+        handleArticleStockValidations(articleQuantityMap, articlesFound);
+    }
+    
+    private Set<Article> findArticlesById(Set<Long> articleIds) {
+        return new HashSet<>(persistencePort.findAllById(articleIds));
+    }
+
+    private void handleArticleStockValidations(Map<Long, Long> articleQuantityMap, Set<Article> articlesFound) {
         handleNotFoundId(articleQuantityMap.keySet().size(), articlesFound.size());
         handleInsufficientStock(articlesFound, articleQuantityMap);
         handleArticleCategoryQuantityConstraint(articlesFound);
     }
 
     private void handleInsufficientStock(Set<Article> articlesFound, Map<Long, Long> map) {
-        articlesFound.forEach(a -> {
-            if (a.getQuantity() < map.get(a.getId())) {
-                throw new NotSufficientStock(Article.class.getSimpleName(), ArticleEntity.Fields.id, a.getId().toString());
-            }
-        });
+        articlesFound.forEach(a -> validPositiveArticleQuantity(a.getQuantity(), map.get(a.getId()), a.getId()));
     }
 
     private void handleArticleCategoryQuantityConstraint(Set<Article> articles) {
@@ -174,5 +178,56 @@ public class ArticleUseCase implements IArticleServicePort {
     @Override
     public Set<ArticlesPriceDTO> getArticlesPrice(Set<Long> articleIds) {
         return persistencePort.getArticlesPrice(articleIds);
+    }
+
+    @Override
+    public void processStockReduction(ItemsReqDTO itemsReqDTO) {
+        Map<Long, Long> articleQuantityMap = getArticleQuantityMap(itemsReqDTO.getItems());
+        Set<Article> articlesFound = findArticlesById(articleQuantityMap.keySet());
+
+        handleStockReduction(articleQuantityMap, articlesFound);
+    }
+
+    @Override
+    public void processRollback(ItemsReqDTO itemsReqDTO) {
+        Map<Long, Long> articleQuantityMap = getArticleQuantityMap(itemsReqDTO.getItems());
+        Set<Article> articlesFound = findArticlesById(articleQuantityMap.keySet());
+
+        handleInsufficientStock(articlesFound, articleQuantityMap);
+        handleRollback(articleQuantityMap, articlesFound);
+    }
+
+    private void handleRollback(Map<Long, Long> articleQuantityMap, Set<Article> articlesFound) {
+        addQuantityForArticles(articleQuantityMap, articlesFound);
+        saveAllArticles(articlesFound);
+    }
+
+    private void addQuantityForArticles(Map<Long, Long> articleQuantityMap, Set<Article> articlesFound) {
+        articlesFound.forEach(a -> a.setQuantity(a.getQuantity() + articleQuantityMap.get(a.getId())));
+    }
+
+    private void handleStockReduction(Map<Long, Long> articleQuantityMap, Set<Article> articlesFound) {
+        handleInsufficientStock(articlesFound, articleQuantityMap);
+        reduceStock(articleQuantityMap, articlesFound);
+        saveAllArticles(articlesFound);
+    }
+
+    private void reduceStock(Map<Long, Long> articleQuantityMap, Set<Article> articlesFound) {
+        articlesFound.forEach(a -> a.setQuantity(a.getQuantity() - articleQuantityMap.get(a.getId())));
+    }
+
+    private void saveAllArticles(Set<Article> articles) {
+        articles.forEach(this::save);
+    }
+
+    private void validPositiveArticleQuantity(Long current, Long toSubtract, Long id) {
+        if (current < toSubtract) {
+            throw new NotSufficientStock(Article.class.getSimpleName(), ArticleEntity.Fields.id, id.toString());
+        }
+    }
+
+    @Override
+    public List<Article> getAllArticles(List<Long> articleIds) {
+        return persistencePort.findAllById(articleIds);
     }
 }
