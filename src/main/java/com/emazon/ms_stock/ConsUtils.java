@@ -12,6 +12,12 @@ public class ConsUtils {
         return new PathBuilder();
     }
 
+    public static final String COMMA_DELIMITER = ",";
+    public static final String ASC = "ASC";
+    public static final String NAME = "name";
+    public static final String INTEGER_STR_0 = "0";
+    public static final String INTEGER_STR_20 = "20";
+
     public static final String BASIC_CATEGORIES_URL = "/stock/categories";
     public static final String BASIC_BRAND_URL = "/stock/brands";
     public static final String BASIC_ARTICLES_URL = "/stock/articles";
@@ -89,7 +95,15 @@ public class ConsUtils {
     public static final String NAME_PARAM_VALUE = "name";
     public static final String DESCRIPTION_PARAM_VALUE = "description";
 
+    /*** Routes ***/
+    public static final String WITH_ROLLBACK = "/rollback";
+    public static final String WITH_ALL = "/all";
+
     public static final String ARTICLE_IDS = "articleIds";
+    public static final String VALIDATE_CART_URL = "/cart/articles";
+    public static final String PROCESS_CART_PURCHASE_URL = "/cart/articles/purchase";
+    public static final String PROCESS_CART_ROLLBACK_URL = "/cart/articles/rollback";
+    public static final String GET_ALL_ARTICLES = "/articles/all";
 
     public static final List<String> PARAMS_FOR_ARTICLES_ON_CART = List.of(CATEGORY_PARAM_VALUE,
             NAME_PARAM_VALUE,
@@ -127,7 +141,22 @@ public class ConsUtils {
         }
 
         public PathBuilder withCart() {
-            this.finalPath += "/carts";
+            this.finalPath += "/cart";
+            return this;
+        }
+
+        public PathBuilder withPurchase() {
+            this.finalPath += "/purchase";
+            return this;
+        }
+
+        public PathBuilder withRollback() {
+            this.finalPath += WITH_ROLLBACK;
+            return this;
+        }
+
+        public PathBuilder withAll() {
+            this.finalPath += WITH_ALL;
             return this;
         }
 
