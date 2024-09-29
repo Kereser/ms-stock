@@ -128,7 +128,7 @@ class ArticleUseCaseTest {
         Mockito.doReturn(createArticles(ConsUtils.INTEGER_1)).when(articlePersistencePort).findAllById(Mockito.any());
 
         Set<ItemQuantityDTO> itemsSet = getItemsQuantityDTO(ConsUtils.INTEGER_2);
-        Assertions.assertThrows(NoDataFoundException.class, () -> articleUseCase.handleCartAdditionValidations(itemsSet));
+        Assertions.assertThrows(NoDataFoundException.class, () -> articleUseCase.validationsOnStockForCart(itemsSet));
     }
 
     @Test
@@ -137,7 +137,7 @@ class ArticleUseCaseTest {
 
         Set<ItemQuantityDTO> itemsSet = getItemsQuantityDTO(ConsUtils.INTEGER_1);
         itemsSet.stream().findFirst().orElse(ItemQuantityDTO.builder().build()).setQuantity(ConsUtils.LONG_10);
-        Assertions.assertThrows(NotSufficientStock.class, () -> articleUseCase.handleCartAdditionValidations(itemsSet));
+        Assertions.assertThrows(NotSufficientStock.class, () -> articleUseCase.validationsOnStockForCart(itemsSet));
     }
 
     @Test
@@ -145,7 +145,7 @@ class ArticleUseCaseTest {
         Mockito.doReturn(createArticles(ConsUtils.INTEGER_4)).when(articlePersistencePort).findAllById(Mockito.any());
 
         Set<ItemQuantityDTO> itemsSet = getItemsQuantityDTO(ConsUtils.INTEGER_4);
-        Assertions.assertThrows(ArticleCategoryQuantityException.class, () -> articleUseCase.handleCartAdditionValidations(itemsSet));
+        Assertions.assertThrows(ArticleCategoryQuantityException.class, () -> articleUseCase.validationsOnStockForCart(itemsSet));
     }
 
     @Test

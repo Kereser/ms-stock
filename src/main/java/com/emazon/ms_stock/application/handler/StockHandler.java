@@ -95,8 +95,8 @@ public class StockHandler implements IStockHandler {
     }
 
     @Override
-    public void handleCartAdditionValidations(Set<ItemQuantityDTO> itemQuantityDTOS) {
-        articleServicePort.handleCartAdditionValidations(itemQuantityDTOS);
+    public void validationsOnStockForCart(Set<ItemQuantityDTO> itemQuantityDTOS) {
+        articleServicePort.validationsOnStockForCart(itemQuantityDTOS);
     }
 
     @Override
@@ -114,6 +114,23 @@ public class StockHandler implements IStockHandler {
         return articleServicePort.getArticlesPrice(articleIds);
     }
 
+    @Override
+    public List<ArticleResDTO> getAllArticles(ItemsReqDTO itemsReqDTO) {
+        List<Article> articles = articleServicePort.getAllArticles(itemsReqDTO.getItems().stream().map(ItemQuantityDTO::getArticleId).toList());
+
+        return articleDTOMapper.articlesToArticlesResDTOs(articles);
+    }
+
+    @Override
+    public void processStockReduction(ItemsReqDTO itemsReqDTO) {
+        articleServicePort.processStockReduction(itemsReqDTO);
+    }
+
+    @Override
+    public void processRollback(ItemsReqDTO itemsReqDTO) {
+        articleServicePort.processRollback(itemsReqDTO);
+    }
+
     private PageHandler buildPageHandlerWithFilters(String direction, Integer pageSize, Integer page, String columns, Map<String, Set<Long>> filters) {
         return ParsingUtils.getHandlerFromParams(direction, pageSize, page, columns, filters);
     }
@@ -123,7 +140,7 @@ public class StockHandler implements IStockHandler {
     }
 
     private void validColumnsToSort(String columns) {
-        String[] columnsArray = columns.split(",");
+        String[] columnsArray = columns.split(ConsUtils.COMMA_DELIMITER);
 
         if (columnsArray.length > 2) {
             throw new InvalidRequestParam(INVALID_SORT_CRITERIA);

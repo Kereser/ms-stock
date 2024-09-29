@@ -40,7 +40,7 @@ import org.springframework.util.MultiValueMap;
 import java.math.BigDecimal;
 import java.util.*;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -232,7 +232,7 @@ class StockControllerIntegrationTest {
     }
 
     @Test
-    void Should_GetOK_When_NotValidArticlesOnStock() throws Exception {
+    void Should_ThrowsException_When_NotValidArticlesOnStock() throws Exception {
         Mockito.doReturn(List.of()).when(articlePersistencePort).findAllById(Mockito.any());
 
         postSupplyWithAuxDepotToken()
@@ -250,7 +250,7 @@ class StockControllerIntegrationTest {
         createArticle();
 
         itemsReqDTO.setItems(Set.of(ITEM_QUANTITY_DTO_2));
-        mockMvc.perform(put(ConsUtils.builderPath().withArticles().build(), ConsUtils.LONG_1)
+        mockMvc.perform(post(ConsUtils.builderPath().withCart().withArticles().build())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(itemsReqDTO))
                         .header(ConsUtils.AUTHORIZATION, ConsUtils.BEARER + getClientToken()))
@@ -265,7 +265,7 @@ class StockControllerIntegrationTest {
         createArticle();
 
         itemsReqDTO.setItems(Set.of(ItemQuantityDTO.builder().articleId(ConsUtils.LONG_1).quantity(ConsUtils.LONG_10).build()));
-        mockMvc.perform(put(ConsUtils.builderPath().withArticles().build(), ConsUtils.LONG_1)
+        mockMvc.perform(post(ConsUtils.builderPath().withCart().withArticles().build())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(itemsReqDTO))
                         .header(ConsUtils.AUTHORIZATION, ConsUtils.BEARER + getClientToken()))
@@ -281,7 +281,7 @@ class StockControllerIntegrationTest {
         saveThreeArticlesOfSameCategory();
 
         itemsReqDTO.setItems(getFourArticlesOfSameCategory());
-        mockMvc.perform(put(ConsUtils.builderPath().withArticles().build(), ConsUtils.LONG_1)
+        mockMvc.perform(post(ConsUtils.builderPath().withCart().withArticles().build())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(itemsReqDTO))
                         .header(ConsUtils.AUTHORIZATION, ConsUtils.BEARER + getClientToken()))
@@ -295,7 +295,7 @@ class StockControllerIntegrationTest {
     void Should_Get200_When_ValidPayload() throws Exception {
         createArticle();
 
-        mockMvc.perform(put(ConsUtils.builderPath().withArticles().build(), ConsUtils.LONG_1)
+        mockMvc.perform(post(ConsUtils.builderPath().withCart().withArticles().build())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(itemsReqDTO))
                         .header(ConsUtils.AUTHORIZATION, ConsUtils.BEARER + getClientToken()))
@@ -308,10 +308,10 @@ class StockControllerIntegrationTest {
     void Should_GetAllCartItems_When_ValidParams() throws Exception {
         createArticle();
 
-        mockMvc.perform(get(ConsUtils.builderPath().withCart().withArticles().withArticlesIds().build(), ConsUtils.LONG_1))
+        mockMvc.perform(get(ConsUtils.builderPath().withCart().withArticles().withArticlesIds().build(), ConsUtils.LONG_1)
+                .header(ConsUtils.AUTHORIZATION, ConsUtils.BEARER + getClientToken()))
                 .andExpect(jsonPath(ConsUtils.FIELD_TOTAL_ELEMENTS).value(ConsUtils.LONG_1))
                 .andExpect(status().isOk());
-
     }
 
     @Test
@@ -319,7 +319,8 @@ class StockControllerIntegrationTest {
     void Should_Return200_When_IdsNotFound() throws Exception {
         createArticle();
 
-        mockMvc.perform(get(ConsUtils.builderPath().withCart().withArticles().withArticlesIds().build(), ConsUtils.LONG_0))
+        mockMvc.perform(get(ConsUtils.builderPath().withCart().withArticles().withArticlesIds().build(), ConsUtils.LONG_10)
+                .header(ConsUtils.AUTHORIZATION, ConsUtils.BEARER + getClientToken()))
                 .andExpect(jsonPath(ConsUtils.FIELD_TOTAL_ELEMENTS).value(ConsUtils.INTEGER_0))
                 .andExpect(status().isOk());
     }
