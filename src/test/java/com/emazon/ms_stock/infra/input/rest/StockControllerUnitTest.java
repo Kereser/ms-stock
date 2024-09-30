@@ -158,20 +158,7 @@ class StockControllerUnitTest {
     @Test
     @WithMockUser(roles = ConsUtils.CLIENT)
     void Should_ThrowsException_When_NotValidFieldsForCart() throws Exception {
-        mockMvc.perform(post(ConsUtils.builderPath().withCart().withArticles().build())
-                        .content(mapper.writeValueAsString(ItemsReqDTO.builder().build()))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath(ConsUtils.FIELD_MESSAGE).value(ExceptionResponse.FIELD_VALIDATION_ERRORS))
-                .andExpect(jsonPath(ConsUtils.FIELD_ITEMS).value(ExceptionResponse.NOT_NULL))
-                .andExpect(status().isBadRequest());
-
-        mockMvc.perform(post(ConsUtils.builderPath().withCart().withArticles().build())
-                        .content(mapper.writeValueAsString(ItemsReqDTO.builder().items(Set.of(ItemQuantityDTO.builder().build())).build()))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath(ConsUtils.FIELD_MESSAGE).value(ExceptionResponse.FIELD_VALIDATION_ERRORS))
-                .andExpect(jsonPath(ConsUtils.FIELD_ARTICLE_ID_PATH_ARRAY).value(ExceptionResponse.NOT_NULL))
-                .andExpect(jsonPath(ConsUtils.FIELD_QUANTITY_PATH_ARRAY).value(ExceptionResponse.NOT_NULL))
-                .andExpect(status().isBadRequest());
+        testItemsReqDTOInvalidFields(ConsUtils.builderPath().withCart().withArticles().build());
     }
 
     @Test
@@ -195,6 +182,29 @@ class StockControllerUnitTest {
                 .andExpect(status().isUnauthorized());
     }
 
+    /*** Buy cart ***/
+    @Test
+    @WithMockUser(roles = ConsUtils.CLIENT)
+    void Should_ThrowsException_When_InvalidFieldOnCartOperations() throws Exception {
+        testItemsReqDTOInvalidFields(ConsUtils.builderPath().withCart().withArticles().withPurchase().build());
+
+        testItemsReqDTOInvalidFields(ConsUtils.builderPath().withCart().withArticles().withRollback().build());
+
+        testItemsReqDTOInvalidFields(ConsUtils.builderPath().withArticles().withAll().build());
+    }
+
+    @Test
+    void Should_ThrowsException_When_NotAuthenticatedForOperations() throws Exception {
+        mockMvc.perform(post(ConsUtils.builderPath().withCart().withArticles().withPurchase().build()))
+                .andExpect(status().isUnauthorized());
+
+        mockMvc.perform(post(ConsUtils.builderPath().withCart().withArticles().withRollback().build()))
+                .andExpect(status().isUnauthorized());
+
+        mockMvc.perform(post(ConsUtils.builderPath().withArticles().withAll().build()))
+                .andExpect(status().isUnauthorized());
+    }
+
     /*** COMMON ***/
     private void assertFieldErrors(ResultActions res, Integer numberOfFields) throws Exception {
         final String fieldErrors = ConsUtils.FIELD_ERROR;
@@ -209,5 +219,22 @@ class StockControllerUnitTest {
         return mockMvc.perform(MockMvcRequestBuilders.post(url)
                 .content(dto)
                 .contentType(MediaType.APPLICATION_JSON));
+    }
+
+    private void testItemsReqDTOInvalidFields(String url) throws Exception {
+        mockMvc.perform(post(url)
+                        .content(mapper.writeValueAsString(ItemsReqDTO.builder().build()))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath(ConsUtils.FIELD_MESSAGE).value(ExceptionResponse.FIELD_VALIDATION_ERRORS))
+                .andExpect(jsonPath(ConsUtils.FIELD_ITEMS).value(ExceptionResponse.NOT_NULL))
+                .andExpect(status().isBadRequest());
+
+        mockMvc.perform(post(url)
+                        .content(mapper.writeValueAsString(ItemsReqDTO.builder().items(Set.of(ItemQuantityDTO.builder().build())).build()))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath(ConsUtils.FIELD_MESSAGE).value(ExceptionResponse.FIELD_VALIDATION_ERRORS))
+                .andExpect(jsonPath(ConsUtils.FIELD_ARTICLE_ID_PATH_ARRAY).value(ExceptionResponse.NOT_NULL))
+                .andExpect(jsonPath(ConsUtils.FIELD_QUANTITY_PATH_ARRAY).value(ExceptionResponse.NOT_NULL))
+                .andExpect(status().isBadRequest());
     }
 }

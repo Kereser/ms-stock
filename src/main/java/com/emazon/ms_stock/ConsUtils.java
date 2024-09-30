@@ -84,6 +84,7 @@ public class ConsUtils {
     public static final String INVALID_SORT_CRITERIA = "Invalid sort criteria in request param";
     public static final String NON_EXISTING_SORTING_COLUMN = "Non:existing:column";
     public static final String COLUMN_PARAM = "column";
+    public static final String COLUMNS_PARAM = "columns";
     public static final String SORT_ASC_VALUE = "ASC";
     public static final String SORT_DESC_VALUE = "DESC";
 
