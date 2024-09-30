@@ -8,6 +8,7 @@ class MsStockApplicationTests {
 
 	@Test
 	void contextLoads() {
+		// Not implemented.
 	}
 
 }
