@@ -327,6 +327,32 @@ class StockControllerIntegrationTest {
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
+    void Should_Return200_When_FilterByIdAndCategoryAndBrandNameASC() throws Exception {
+        createArticle();
+
+        mockMvc.perform(get(ConsUtils.builderPath().withCart().withArticles().withArticlesIds().build(), ConsUtils.LONG_1)
+                        .params(buildParams(Map.of(ConsUtils.COLUMNS_PARAM, ConsUtils.CATEGORY_PARAM_VALUE + ConsUtils.COMMA_DELIMITER + ConsUtils.BRAND_PARAM_VALUE)))
+                        .header(ConsUtils.AUTHORIZATION, ConsUtils.BEARER + getClientToken()))
+                .andExpect(jsonPath(ConsUtils.FIELD_TOTAL_ELEMENTS).value(ConsUtils.INTEGER_1))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
+    void Should_Return200_When_FilterByIdAndCategoryAndBrandNameDESC() throws Exception {
+        createArticle();
+
+        mockMvc.perform(get(ConsUtils.builderPath().withCart().withArticles().withArticlesIds().build(), ConsUtils.LONG_1)
+                        .params(buildParams(Map.of(ConsUtils.COLUMNS_PARAM, ConsUtils.CATEGORY_PARAM_VALUE + ConsUtils.COMMA_DELIMITER + ConsUtils.BRAND_PARAM_VALUE)))
+                        .params(buildParams(Map.of(ConsUtils.DIRECTION_PARAM, ConsUtils.SORT_DESC_VALUE)))
+                        .header(ConsUtils.AUTHORIZATION, ConsUtils.BEARER + getClientToken()))
+                .andExpect(jsonPath(ConsUtils.FIELD_TOTAL_ELEMENTS).value(ConsUtils.INTEGER_1))
+                .andExpect(status().isOk());
+    }
+
+    /*** Articles with price ***/
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
     void Should_Return200_When_GetAllArticlesWithPrice() throws Exception {
         createArticle();
 

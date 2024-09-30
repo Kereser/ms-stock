@@ -149,12 +149,48 @@ class ArticleUseCaseTest {
     }
 
     @Test
+    void Should_HaveValidInteractions_When_ValidPayloadOnValidationsOnStock() {
+        Mockito.doReturn(List.of(TestCreationUtils.createArticle())).when(articlePersistencePort).findAllById(Mockito.any());
+        articleUseCase.validationsOnStockForCart(Set.of(TestCreationUtils.createItemQuantity()));
+
+        Mockito.verify(articlePersistencePort, Mockito.times(ConsUtils.INTEGER_1)).findAllById(Mockito.any());
+    }
+
+    @Test
     void Should_HaveValidInteractions_When_ValidPayload() {
         PageHandler page = getBasicPageAsc(Sort.Direction.ASC);
         page.setColumn(ConsUtils.CATEGORY_PARAM_VALUE + "," + ConsUtils.BRAND_PARAM_VALUE);
         articleUseCase.findAllPageable(page);
 
         Mockito.verify(articlePersistencePort, Mockito.times(ConsUtils.INTEGER_1)).findAllByArticleIdsAndCategoryAndBrandNameAsc(Mockito.any(), Mockito.any());
+    }
+
+    /*** Buy cart flow ***/
+    @Test
+    void Should_InteractToGetArticles_When_ValidPayloadOnReduction() {
+        Mockito.doReturn(List.of(TestCreationUtils.createArticle())).when(articlePersistencePort).findAllById(Mockito.any());
+        Mockito.doReturn(List.of(TestCreationUtils.createCategory())).when(categoryPersistencePort).findAllById(Mockito.any());
+        Mockito.doReturn(Optional.of(TestCreationUtils.createBrand())).when(brandPersistencePort).findById(Mockito.any());
+        articleUseCase.processStockReduction(TestCreationUtils.createItemsReqDTO());
+
+        Mockito.verify(articlePersistencePort, Mockito.times(ConsUtils.INTEGER_1)).findAllById(Mockito.any());
+    }
+
+    @Test
+    void Should_InteractToGetArticles_When_ValidPayloadOnRollback() {
+        Mockito.doReturn(List.of(TestCreationUtils.createArticle())).when(articlePersistencePort).findAllById(Mockito.any());
+        Mockito.doReturn(List.of(TestCreationUtils.createCategory())).when(categoryPersistencePort).findAllById(Mockito.any());
+        Mockito.doReturn(Optional.of(TestCreationUtils.createBrand())).when(brandPersistencePort).findById(Mockito.any());
+        articleUseCase.processRollback(TestCreationUtils.createItemsReqDTO());
+
+        Mockito.verify(articlePersistencePort, Mockito.times(ConsUtils.INTEGER_1)).findAllById(Mockito.any());
+    }
+
+    @Test
+    void Should_GetAllArticles_When_ValidArticleIds() {
+        articleUseCase.getAllArticles(List.of(ConsUtils.LONG_1));
+
+        Mockito.verify(articlePersistencePort, Mockito.times(ConsUtils.INTEGER_1)).findAllById(Mockito.any());
     }
 
     private Set<ItemQuantityDTO> getItemsQuantityDTO(Integer quantity) {

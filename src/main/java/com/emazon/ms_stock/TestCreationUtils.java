@@ -1,6 +1,7 @@
 package com.emazon.ms_stock;
 
 import com.emazon.ms_stock.application.dto.ItemQuantityDTO;
+import com.emazon.ms_stock.application.dto.ItemsReqDTO;
 import com.emazon.ms_stock.domain.model.Article;
 import com.emazon.ms_stock.domain.model.Brand;
 import com.emazon.ms_stock.domain.model.Category;
@@ -60,6 +61,12 @@ public class TestCreationUtils {
         return ItemQuantityDTO.builder()
                 .articleId(ConsUtils.LONG_1)
                 .quantity(ConsUtils.LONG_1)
+                .build();
+    }
+
+    public static ItemsReqDTO createItemsReqDTO() {
+        return ItemsReqDTO.builder()
+                .items(Set.of(createItemQuantity()))
                 .build();
     }
 }
