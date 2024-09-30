@@ -5,6 +5,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.emazon.ms_stock.ConsUtils;
 import com.emazon.ms_stock.infra.exception.InvalidBearerTokenException;
 import com.emazon.ms_stock.infra.security.model.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,20 +26,18 @@ public class JwtUtils {
 
     private static String userGenerator;
 
-    @Value("${security.jwt.key.private}")
+    @Value(ConsUtils.JWT_KEY)
     public void setKey(String key){
         JwtUtils.key = key;
     }
 
-    @Value("${security.jwt.user.generator}")
+    @Value(ConsUtils.JWT_USER)
     public void setUserGenerator(String name){
         JwtUtils.userGenerator = name;
     }
 
     private static final String USER_ID = "userId";
     private static final String AUTHORITIES = "authorities";
-
-    public static final Long PLUS_30_MINUTES = 1800000L;
 
     public static String createToken(Authentication authentication) {
         Algorithm algorithm = Algorithm.HMAC256(key);
@@ -50,7 +49,7 @@ public class JwtUtils {
         String authorities = authentication.getAuthorities()
                 .stream()
                 .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
+                .collect(Collectors.joining(ConsUtils.COMMA_DELIMITER));
 
         return JWT.create()
                 .withIssuer(userGenerator)
@@ -58,7 +57,7 @@ public class JwtUtils {
                 .withClaim(AUTHORITIES, authorities)
                 .withClaim(USER_ID, userId)
                 .withIssuedAt(new Date())
-                .withExpiresAt(new Date(System.currentTimeMillis() + PLUS_30_MINUTES))
+                .withExpiresAt(new Date(System.currentTimeMillis() + ConsUtils.PLUS_30_MINUTES))
                 .withJWTId(UUID.randomUUID().toString())
                 .withNotBefore(new Date(System.currentTimeMillis()))
                 .sign(algorithm);

@@ -12,7 +12,11 @@ public class ConsUtils {
         return new PathBuilder();
     }
 
+    public static final Long PLUS_30_MINUTES = 1800000L;
+    public static final String JWT_KEY = "${security.jwt.key.private}";
+    public static final String JWT_USER = "${security.jwt.user.generator}";
     public static final String COMMA_DELIMITER = ",";
+
     public static final String ASC = "ASC";
     public static final String NAME = "name";
     public static final String INTEGER_STR_0 = "0";
