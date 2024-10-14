@@ -18,6 +18,7 @@ public interface IStockHandler {
     void saveCategoryInStock(CategoryReqDTO reqDTO);
     void createArticleInStock(ArticleReqDTO dto);
     void createBrandInStock(BrandReqDTO dto);
+    List<CategoryResDTO> getAllCategoriesByName(List<String> names);
 
     void addSupply(Set<ItemQuantityDTO> dto);
 

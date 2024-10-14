@@ -11,4 +11,5 @@ public interface ICategoryPersistencePort extends IBasicCrudPersistencePort<Cate
     Optional<Category> findByName(String name);
     List<Category> findAllById(Iterable<Long> ids);
     PageDTO<Category> findAllPageable(Pageable page);
+    List<Category> findAllByName(List<String> names);
 }
