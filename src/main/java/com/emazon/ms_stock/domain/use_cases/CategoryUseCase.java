@@ -9,6 +9,7 @@ import com.emazon.ms_stock.domain.model.Category;
 import com.emazon.ms_stock.domain.spi.ICategoryPersistencePort;
 import com.emazon.ms_stock.infra.exception.CategoryAlreadyExists;
 
+import java.util.List;
 import java.util.Optional;
 
 public class CategoryUseCase implements ICategoryServicePort {
@@ -35,5 +36,10 @@ public class CategoryUseCase implements ICategoryServicePort {
     @Override
     public PageDTO<Category> findAllPageable(PageHandler page) {
         return persistencePort.findAllPageable(ParsingUtils.toPageable(page));
+    }
+
+    @Override
+    public List<Category> findCategoriesByName(List<String> names) {
+        return persistencePort.findAllByName(names);
     }
 }

@@ -131,6 +131,13 @@ public class StockHandler implements IStockHandler {
         articleServicePort.processRollback(itemsReqDTO);
     }
 
+    @Override
+    public List<CategoryResDTO> getAllCategoriesByName(List<String> names) {
+        List<Category> categoryList = categoryServicePort.findCategoriesByName(names);
+
+        return categoryDTOMapper.categoryListToCategoryResDTO(categoryList);
+    }
+
     private PageHandler buildPageHandlerWithFilters(String direction, Integer pageSize, Integer page, String columns, Map<String, Set<Long>> filters) {
         return ParsingUtils.getHandlerFromParams(direction, pageSize, page, columns, filters);
     }
