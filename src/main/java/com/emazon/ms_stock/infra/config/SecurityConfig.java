@@ -15,6 +15,12 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -27,10 +33,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, CustomJWTEntryPoint jwtEntryPoint) throws Exception {
         http
+            .cors(cors -> cors.configurationSource(apiConfigurationSource()))
             .csrf(AbstractHttpConfigurer::disable)
             .httpBasic(httpBasic -> httpBasic.authenticationEntryPoint(customBasicAuthenticationEntryPoint))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> {
+                auth.requestMatchers(ConsUtils.SWAGGER_URL, ConsUtils.SWAGGER_DOCS_URL).permitAll();
+
                 auth.requestMatchers(HttpMethod.POST, ConsUtils.builderPath().withArticles().withSupply().build()).hasRole(ConsUtils.AUX_DEPOT);
 
                 auth.requestMatchers(HttpMethod.POST, ConsUtils.builderPath().withCart().withArticles().build()).hasRole(ConsUtils.CLIENT);
@@ -41,8 +50,8 @@ public class SecurityConfig {
                 auth.requestMatchers(HttpMethod.POST, ConsUtils.builderPath().withArticles().withAll().build()).hasRole(ConsUtils.CLIENT);
                 auth.requestMatchers(HttpMethod.GET, ConsUtils.builderPath().withArticles().withArticlesIds().build()).permitAll();
 
-                auth.requestMatchers(HttpMethod.GET, ConsUtils.builderPath().withAnything().build()).permitAll();
                 auth.requestMatchers(HttpMethod.POST, ConsUtils.builderPath().withAnything().build()).hasRole(ConsUtils.ADMIN);
+                auth.requestMatchers(HttpMethod.GET, ConsUtils.builderPath().withAnything().build()).permitAll();
 
                 auth.anyRequest().denyAll();
             });
@@ -51,5 +60,17 @@ public class SecurityConfig {
         http.addFilterBefore(new JwtValidatorFilter(jwtEntryPoint), BasicAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    CorsConfigurationSource apiConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:4200")); // Origen permitido
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE")); // Métodos permitidos
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With")); // Encabezados permitidos
+        configuration.setExposedHeaders(Arrays.asList("Authorization")); // Encabezados expuestos
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }

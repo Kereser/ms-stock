@@ -24,13 +24,13 @@ public class StockController {
 
     private final IStockHandler stockHandler;
 
-    @PostMapping("/categories")
+    @PostMapping(ConsUtils.CATEGORIES_URL)
     public ResponseEntity<Void> createCategory(@RequestBody @Valid CategoryReqDTO reqDTO) {
         stockHandler.saveCategoryInStock(reqDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping("/categories")
+    @GetMapping(ConsUtils.CATEGORIES_URL)
     public ResponseEntity<PageDTO<CategoryResDTO>> getAllCategories(
             @RequestParam(defaultValue = ConsUtils.ASC) SortOrder direction,
             @RequestParam(defaultValue = ConsUtils.INTEGER_STR_20) Integer pageSize,
@@ -39,19 +39,29 @@ public class StockController {
         return ResponseEntity.ok().body(stockHandler.getAllCategories(direction.name(), pageSize, page, column));
     }
 
-    @PostMapping("/brands")
+    @GetMapping(ConsUtils.CATEGORIES_BY_NAMES_URL)
+    public ResponseEntity<List<CategoryResDTO>> getCategoriesByName(@RequestParam List<String> names) {
+        return ResponseEntity.ok().body(stockHandler.getAllCategoriesByName(names));
+    }
+
+    @PostMapping(ConsUtils.BRAND_URL)
     public ResponseEntity<Void> createBrand(@RequestBody @Valid BrandReqDTO dto) {
         stockHandler.createBrandInStock(dto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping("/brands")
+    @GetMapping(ConsUtils.BRAND_URL)
     public ResponseEntity<PageDTO<BrandResDTO>> getAllBrandsPaged(
             @RequestParam(defaultValue = ConsUtils.ASC) SortOrder direction,
             @RequestParam(defaultValue = ConsUtils.INTEGER_STR_20) Integer pageSize,
             @RequestParam(defaultValue = ConsUtils.INTEGER_STR_0) Integer page,
             @RequestParam(defaultValue = ConsUtils.NAME) String column) {
         return ResponseEntity.ok().body(stockHandler.getAllBrands(direction.name(), pageSize, page, column));
+    }
+
+    @GetMapping(ConsUtils.BRANDS_BY_NAME_URL)
+    public ResponseEntity<List<BrandResDTO>> getBrandsByName(@RequestParam List<String> names) {
+        return ResponseEntity.ok().body(stockHandler.getBrandsByName(names));
     }
 
     @PostMapping("/articles")
