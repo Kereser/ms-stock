@@ -8,6 +8,7 @@ import com.emazon.ms_stock.domain.model.Brand;
 import com.emazon.ms_stock.domain.spi.IBrandPersistencePort;
 import com.emazon.ms_stock.infra.exception.BrandAlreadyExists;
 
+import java.util.List;
 import java.util.Optional;
 
 public class BrandUseCase implements IBrandServicePort {
@@ -34,5 +35,10 @@ public class BrandUseCase implements IBrandServicePort {
     @Override
     public PageDTO<Brand> findAllPageable(PageHandler page) {
         return persistencePort.findAllPageable(ParsingUtils.toPageable(page));
+    }
+
+    @Override
+    public List<Brand> findAllByNames(List<String> names) {
+        return persistencePort.findAllByNames(names);
     }
 }
