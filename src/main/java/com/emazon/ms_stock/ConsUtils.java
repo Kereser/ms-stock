@@ -103,6 +103,7 @@ public class ConsUtils {
     /*** Routes ***/
     public static final String WITH_ROLLBACK = "/rollback";
     public static final String WITH_ALL = "/all";
+    public static final String NAMES_PARAM = "names";
 
     public static final String ARTICLE_IDS = "articleIds";
     public static final String VALIDATE_CART_URL = "/cart/articles";
@@ -116,6 +117,13 @@ public class ConsUtils {
     public static final Set<String> COMBINED_PARAMS_FOR_ARTICLE = Set.of(CATEGORY_PARAM_VALUE, BRAND_PARAM_VALUE);
 
     public static final String BASIC_URL = "/stock";
+    public static final String CATEGORIES_URL = "/categories";
+    public static final String BRAND_URL = "/brands";
+    public static final String BRAND_BYNAME_URL = "/brands/by-name";
+    public static final String CATEGORIES_BY_NAMES_URL = "/categories/by-names";
+
+    public static final String SWAGGER_URL = "/swagger-ui/**";
+    public static final String SWAGGER_DOCS_URL = "/v3/api-docs/**";
 
     public static class PathBuilder {
         private String finalPath = BASIC_URL;
@@ -136,12 +144,17 @@ public class ConsUtils {
         }
 
         public PathBuilder withCategories() {
-            this.finalPath += "/categories";
+            this.finalPath += CATEGORIES_URL;
+            return this;
+        }
+
+        public PathBuilder withCategoriesByName() {
+            this.finalPath += CATEGORIES_BY_NAMES_URL;
             return this;
         }
 
         public PathBuilder withBrands() {
-            this.finalPath += "/brands";
+            this.finalPath += BRAND_URL;
             return this;
         }
 
