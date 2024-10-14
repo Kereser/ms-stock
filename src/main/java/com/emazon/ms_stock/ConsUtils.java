@@ -119,7 +119,7 @@ public class ConsUtils {
     public static final String BASIC_URL = "/stock";
     public static final String CATEGORIES_URL = "/categories";
     public static final String BRAND_URL = "/brands";
-    public static final String BRAND_BYNAME_URL = "/brands/by-name";
+    public static final String BRANDS_BY_NAME_URL = "/brands/by-names";
     public static final String CATEGORIES_BY_NAMES_URL = "/categories/by-names";
 
     public static final String SWAGGER_URL = "/swagger-ui/**";
@@ -155,6 +155,11 @@ public class ConsUtils {
 
         public PathBuilder withBrands() {
             this.finalPath += BRAND_URL;
+            return this;
+        }
+
+        public PathBuilder withBrandsByName() {
+            this.finalPath += BRANDS_BY_NAME_URL;
             return this;
         }
 
