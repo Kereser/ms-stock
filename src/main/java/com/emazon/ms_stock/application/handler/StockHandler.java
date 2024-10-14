@@ -138,6 +138,13 @@ public class StockHandler implements IStockHandler {
         return categoryDTOMapper.categoryListToCategoryResDTO(categoryList);
     }
 
+    @Override
+    public List<BrandResDTO> getBrandsByName(List<String> names) {
+        List<Brand> brandList = brandServicePort.findAllByNames(names);
+
+        return brandDTOMapper.brandToBrandResDTO(brandList);
+    }
+
     private PageHandler buildPageHandlerWithFilters(String direction, Integer pageSize, Integer page, String columns, Map<String, Set<Long>> filters) {
         return ParsingUtils.getHandlerFromParams(direction, pageSize, page, columns, filters);
     }

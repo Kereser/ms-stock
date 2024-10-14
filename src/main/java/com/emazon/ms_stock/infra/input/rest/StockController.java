@@ -59,9 +59,9 @@ public class StockController {
         return ResponseEntity.ok().body(stockHandler.getAllBrands(direction.name(), pageSize, page, column));
     }
 
-    @GetMapping(ConsUtils.BRAND_BYNAME_URL)
+    @GetMapping(ConsUtils.BRANDS_BY_NAME_URL)
     public ResponseEntity<List<BrandResDTO>> getBrandsByName(@RequestParam List<String> names) {
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body(stockHandler.getBrandsByName(names));
     }
 
     @PostMapping("/articles")

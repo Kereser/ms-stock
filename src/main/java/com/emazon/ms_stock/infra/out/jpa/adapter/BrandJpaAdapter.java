@@ -9,6 +9,7 @@ import com.emazon.ms_stock.infra.out.jpa.repository.BrandJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -41,5 +42,12 @@ public class BrandJpaAdapter implements IBrandPersistencePort {
         Optional<BrandEntity> opt = brandJpaRepository.findByName(name);
 
         return opt.map(brandEntityMapper::toBrand);
+    }
+
+    @Override
+    public List<Brand> findAllByNames(List<String> names) {
+        List<BrandEntity> brandEntityList = brandJpaRepository.findByNameIn(names);
+
+        return brandEntityMapper.brandEntityListToBrand(brandEntityList);
     }
 }
