@@ -1,6 +1,7 @@
 package com.emazon.ms_stock.infra.input.rest;
 
 import com.emazon.ms_stock.ConsUtils;
+import com.emazon.ms_stock.TestCreationUtils;
 import com.emazon.ms_stock.application.dto.*;
 import com.emazon.ms_stock.application.dto.input.ArticleReqDTO;
 import com.emazon.ms_stock.application.dto.input.BrandReqDTO;
@@ -111,6 +112,14 @@ class StockControllerIntegrationTest {
         sentPostToCreateEntity(mapper.writeValueAsString(categoryReqDTO), ConsUtils.builderPath().withCategories().build());
 
         assertValidPageDTOFormResponseFromResult(mockMvc.perform(MockMvcRequestBuilders.get(ConsUtils.builderPath().withCategories().build())), ConsUtils.INTEGER_1);
+    }
+
+    @Test
+    void Should_GetAllCategoriesByName_When_ValidNames() throws Exception {
+        sentPostToCreateEntity(mapper.writeValueAsString(categoryReqDTO), ConsUtils.builderPath().withCategories().build());
+
+        mockMvc.perform(get(ConsUtils.builderPath().withCategoriesByName().build()).params(buildParams(Map.of(ConsUtils.NAMES_PARAM, ConsUtils.TEST_NAME))))
+                .andExpect(status().isOk()).andExpect(jsonPath(ConsUtils.BASE_MATCHER, Matchers.hasSize(ConsUtils.INTEGER_1)));
     }
 
     /**** BRAND ****/
@@ -359,6 +368,20 @@ class StockControllerIntegrationTest {
         mockMvc.perform(get(ConsUtils.builderPath().withArticles().withArticlesIds().build(), ConsUtils.LONG_1))
                 .andExpect(jsonPath(ConsUtils.BASE_MATCHER, Matchers.hasSize(ConsUtils.INTEGER_1)))
                 .andExpect(status().isOk());
+    }
+
+    /*** Get All Articles ***/
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
+    void Should_GetAllArticles_When_ValidIds() throws Exception{
+        createArticle();
+
+        mockMvc.perform(post(ConsUtils.builderPath().withArticles().withAll().build())
+                        .content(mapper.writeValueAsBytes(TestCreationUtils.createItemsReqDTO()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(ConsUtils.AUTHORIZATION, ConsUtils.BEARER + getClientToken()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath(ConsUtils.BASE_MATCHER, Matchers.hasSize(ConsUtils.INTEGER_1)));
     }
 
     /*** Common ***/
