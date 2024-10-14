@@ -151,6 +151,16 @@ class StockControllerIntegrationTest {
         assertValidPageDTOFormResponseFromResult(mockMvc.perform(MockMvcRequestBuilders.get(ConsUtils.builderPath().withBrands().build())), ConsUtils.INTEGER_1);
     }
 
+    @Test
+    void Should_GetBrandsByName() throws Exception {
+        sentPostToCreateEntity(mapper.writeValueAsString(brandReqDTO), ConsUtils.builderPath().withBrands().build()).andExpect(status().isCreated());
+
+        mockMvc.perform(get(ConsUtils.builderPath().withBrandsByName().build())
+                        .params(buildParams(Map.of(ConsUtils.NAMES_PARAM, ConsUtils.TEST_NAME))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath(ConsUtils.BASE_MATCHER, Matchers.hasSize(ConsUtils.INTEGER_1)));
+    }
+
     /*** ARTICLES ***/
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
