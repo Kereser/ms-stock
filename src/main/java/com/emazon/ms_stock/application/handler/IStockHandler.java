@@ -25,7 +25,7 @@ public interface IStockHandler {
 
     void validationsOnStockForCart(Set<ItemQuantityDTO> dto);
 
-    PageDTO<ArticleResDTO> getArticlesForCart(String direction, Integer pageSize, Integer page, String columns, Set<Long> articleIds);
+    PageDTO<ArticleResDTO> getArticlesForCart(String direction, Integer pageSize, Integer page, String columns, String articleIds);
     Set<ArticlesPriceDTO> getArticlesPrice(Set<Long> articleIds);
 
     void processStockReduction(@Valid ItemsReqDTO itemsReqDTO);
