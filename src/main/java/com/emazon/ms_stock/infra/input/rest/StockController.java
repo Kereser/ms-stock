@@ -64,13 +64,13 @@ public class StockController {
         return ResponseEntity.ok().body(stockHandler.getBrandsByName(names));
     }
 
-    @PostMapping("/articles")
+    @PostMapping(ConsUtils.ARTICLES_URL)
     public ResponseEntity<Void> createArticle(@RequestBody @Valid ArticleReqDTO articleDTO) {
         stockHandler.createArticleInStock(articleDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping("/articles")
+    @GetMapping(ConsUtils.ARTICLES_URL)
     public ResponseEntity<PageDTO<ArticleResDTO>> getAllArticles(
             @RequestParam(defaultValue = ConsUtils.ASC) SortOrder direction,
             @RequestParam(defaultValue = ConsUtils.INTEGER_STR_20) Integer pageSize,
@@ -79,7 +79,7 @@ public class StockController {
         return ResponseEntity.ok().body(stockHandler.getAllArticles(direction.name(), pageSize, page, column));
     }
 
-    @PostMapping("/articles/supply")
+    @PostMapping(ConsUtils.SUPPLY_URL)
     public ResponseEntity<Void> addSupply(@RequestBody @Valid ItemsReqDTO itemsReqDTO) {
         stockHandler.addSupply(itemsReqDTO.getItems());
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -91,17 +91,18 @@ public class StockController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @GetMapping("/cart/articles/{articleIds}")
+    @GetMapping(ConsUtils.ARTICLES_FOR_CART_URL)
     public ResponseEntity<PageDTO<ArticleResDTO>> getCartArticles(
             @RequestParam(defaultValue = ConsUtils.ASC) SortOrder direction,
             @RequestParam(defaultValue = ConsUtils.INTEGER_STR_20) Integer pageSize,
             @RequestParam(defaultValue = ConsUtils.INTEGER_STR_0) Integer page,
-            @RequestParam(defaultValue = ConsUtils.NAME) String columns,
-            @PathVariable Set<Long> articleIds) {
-        return ResponseEntity.ok().body(stockHandler.getArticlesForCart(direction.name(), pageSize, page, columns, articleIds));
+            @RequestParam(defaultValue = ConsUtils.EMPTY) String categoryName,
+            @RequestParam(defaultValue = ConsUtils.EMPTY) String brandName,
+            @PathVariable String articleIds) {
+        return ResponseEntity.ok().body(stockHandler.getArticlesForCart(direction.name(), pageSize, page, ConsUtils.NAME, articleIds));
     }
 
-    @GetMapping("/articles/{articleIds}")
+    @GetMapping(ConsUtils.ARTICLE_PRICE_URL)
     public ResponseEntity<Set<ArticlesPriceDTO>> getArticlesWithPrice(@PathVariable Set<Long> articleIds) {
         return ResponseEntity.ok().body(stockHandler.getArticlesPrice(articleIds));
     }
