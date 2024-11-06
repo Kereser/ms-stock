@@ -16,6 +16,9 @@ public class ConsUtils {
     public static final String JWT_KEY = "${security.jwt.key.private}";
     public static final String JWT_USER = "${security.jwt.user.generator}";
     public static final String COMMA_DELIMITER = ",";
+    public static final String COLON_DELIMITER = ":";
+
+    public static final String EMPTY = "";
 
     public static final String ASC = "ASC";
     public static final String NAME = "name";
@@ -25,7 +28,9 @@ public class ConsUtils {
     public static final String BASIC_CATEGORIES_URL = "/stock/categories";
     public static final String BASIC_BRAND_URL = "/stock/brands";
     public static final String BASIC_ARTICLES_URL = "/stock/articles";
-    public static final String SUPPLY_URL = "/stock/articles/supply";
+    public static final String SUPPLY_TEST_URL = "/stock/articles/supply";
+    public static final String SUPPLY_URL = "/articles/supply";
+    public static final String ARTICLES_URL = "/articles";
 
     public static final String CLIENT = "CLIENT";
     public static final String ADMIN = "ADMIN";
@@ -95,8 +100,12 @@ public class ConsUtils {
     public static final String NON_EXISTING_DIRECTION_COLUMN = "Non:existing:DIRECTION";
     public static final String DIRECTION_PARAM = "direction";
 
-    public static final String CATEGORY_PARAM_VALUE = "category:name";
+    public static final String CATEGORIES_PARAM_VALUE = "categories:name";
+    public static final String CATEGORY_NAME = "categoryName";
+    public static final String CATEGORY = "category";
     public static final String BRAND_PARAM_VALUE = "brand:name";
+    public static final String BRAND_NAME = "brandName";
+    public static final String BRAND = "brand";
     public static final String NAME_PARAM_VALUE = "name";
     public static final String DESCRIPTION_PARAM_VALUE = "description";
 
@@ -105,16 +114,30 @@ public class ConsUtils {
     public static final String WITH_ALL = "/all";
     public static final String NAMES_PARAM = "names";
 
+    public static final String ID = "id";
+
     public static final String ARTICLE_IDS = "articleIds";
     public static final String VALIDATE_CART_URL = "/cart/articles";
     public static final String PROCESS_CART_PURCHASE_URL = "/cart/articles/purchase";
     public static final String PROCESS_CART_ROLLBACK_URL = "/cart/articles/rollback";
     public static final String GET_ALL_ARTICLES = "/articles/all";
+    public static final String ARTICLES_FOR_CART_URL = "/cart/articles/{articleIds}";
+    public static final String ARTICLE_PRICE_URL = "/articles/{articleIds}";
 
-    public static final List<String> PARAMS_FOR_ARTICLES_ON_CART = List.of(CATEGORY_PARAM_VALUE,
+    /*** Security ***/
+    public static final String POST = "POST";
+    public static final String GET = "GET";
+    public static final String PUT = "PUT";
+    public static final String DELETE = "DELETE";
+    public static final String FRONT_URL = "http://localhost:4200";
+    public static final String CONTENT_TYPE = "Content-Type";
+    public static final String REQUESTED_WITH = "X-Requested-With";
+    public static final String MATCH_ALL = "/**";
+
+    public static final List<String> PARAMS_FOR_ARTICLES_ON_CART = List.of(CATEGORIES_PARAM_VALUE,
             NAME_PARAM_VALUE,
             DESCRIPTION_PARAM_VALUE);
-    public static final Set<String> COMBINED_PARAMS_FOR_ARTICLE = Set.of(CATEGORY_PARAM_VALUE, BRAND_PARAM_VALUE);
+    public static final Set<String> COMBINED_PARAMS_FOR_ARTICLE = Set.of(CATEGORIES_PARAM_VALUE, BRAND_PARAM_VALUE);
 
     public static final String BASIC_URL = "/stock";
     public static final String CATEGORIES_URL = "/categories";
@@ -134,7 +157,7 @@ public class ConsUtils {
         }
 
         public PathBuilder withArticles() {
-            this.finalPath += "/articles";
+            this.finalPath += ConsUtils.ARTICLES_URL;
             return this;
         }
 
