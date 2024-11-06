@@ -120,18 +120,18 @@ class StockControllerUnitTest {
     @Test
     @WithMockUser(roles = "AUX_DEPOT")
     void Should_ThrowsException_When_NotBody() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post(ConsUtils.SUPPLY_URL)).andExpect(status().isBadRequest());
+        mockMvc.perform(MockMvcRequestBuilders.post(ConsUtils.SUPPLY_TEST_URL)).andExpect(status().isBadRequest());
     }
 
     @Test
     void Should_ThrowsException_When_NotValidAuthentication() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post(ConsUtils.SUPPLY_URL)).andExpect(status().isUnauthorized());
+        mockMvc.perform(MockMvcRequestBuilders.post(ConsUtils.SUPPLY_TEST_URL)).andExpect(status().isUnauthorized());
     }
 
     @Test
     @WithMockUser(roles = "CLIENT")
     void Should_ThrowsException_When_NotValidRole() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post(ConsUtils.SUPPLY_URL)).andExpect(status().isForbidden());
+        mockMvc.perform(MockMvcRequestBuilders.post(ConsUtils.SUPPLY_TEST_URL)).andExpect(status().isForbidden());
     }
 
     @Test
@@ -139,7 +139,7 @@ class StockControllerUnitTest {
     void Should_ThrowsException_When_NotValidPayload() throws Exception {
         String supplyJSON = mapper.writeValueAsString(ItemsReqDTO.builder().items(Set.of(ItemQuantityDTO.builder().build())).build());
 
-        sentPostToCreateEntity(supplyJSON, ConsUtils.SUPPLY_URL)
+        sentPostToCreateEntity(supplyJSON, ConsUtils.SUPPLY_TEST_URL)
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath(ConsUtils.FIELD_QUANTITY_PATH_ARRAY).value(ExceptionResponse.NOT_NULL))
                 .andExpect(jsonPath(ConsUtils.FIELD_ARTICLE_ID_PATH_ARRAY).value(ExceptionResponse.NOT_NULL));

@@ -81,28 +81,10 @@ class ArticleUseCaseTest {
     @Test
     void Should_InteractWithCorrectMethods_DependingOn_ColumnAndDirectionOnPayload() {
         PageHandler page = getBasicPageAsc(Sort.Direction.ASC);
+        page.setColumn(ConsUtils.BRAND_PARAM_VALUE);
         articleUseCase.findAllPageable(page);
 
-        Mockito.verify(articlePersistencePort, Mockito.times(ConsUtils.INTEGER_1)).findAllByArticleIdPageable(Mockito.any(), Mockito.any());
-        Mockito.verify(articlePersistencePort, Mockito.times(ConsUtils.INTEGER_0)).findAllByCategoryNameAsc(Mockito.any(), Mockito.any());
-        Mockito.verify(articlePersistencePort, Mockito.times(ConsUtils.INTEGER_0)).findAllByCategoryNameDesc(Mockito.any(), Mockito.any());
-
-        Mockito.reset(articlePersistencePort);
-        page.setColumn(Article.INNER_SORT_CATEGORY_NAME);
-        articleUseCase.findAllPageable(page);
-
-        Mockito.verify(articlePersistencePort, Mockito.times(ConsUtils.INTEGER_1)).findAllByCategoryNameAsc(Mockito.any(), Mockito.any());
-        Mockito.verify(articlePersistencePort, Mockito.times(ConsUtils.INTEGER_0)).findAllByArticleIdPageable(Mockito.any(), Mockito.any());
-        Mockito.verify(articlePersistencePort, Mockito.times(ConsUtils.INTEGER_0)).findAllByCategoryNameDesc(Mockito.any(), Mockito.any());
-
-        Mockito.reset(articlePersistencePort);
-        page = getBasicPageAsc(Sort.Direction.DESC);
-        page.setColumn(Article.INNER_SORT_CATEGORY_NAME);
-        articleUseCase.findAllPageable(page);
-
-        Mockito.verify(articlePersistencePort, Mockito.times(ConsUtils.INTEGER_1)).findAllByCategoryNameDesc(Mockito.any(), Mockito.any());
-        Mockito.verify(articlePersistencePort, Mockito.times(ConsUtils.INTEGER_0)).findAllByArticleIdPageable(Mockito.any(), Mockito.any());
-        Mockito.verify(articlePersistencePort, Mockito.times(ConsUtils.INTEGER_0)).findAllByCategoryNameAsc(Mockito.any(), Mockito.any());
+        Mockito.verify(articlePersistencePort, Mockito.times(ConsUtils.INTEGER_1)).findAll(Mockito.any());
     }
 
     @Test
@@ -159,10 +141,10 @@ class ArticleUseCaseTest {
     @Test
     void Should_HaveValidInteractions_When_ValidPayload() {
         PageHandler page = getBasicPageAsc(Sort.Direction.ASC);
-        page.setColumn(ConsUtils.CATEGORY_PARAM_VALUE + "," + ConsUtils.BRAND_PARAM_VALUE);
+        page.setColumn(ConsUtils.CATEGORIES_PARAM_VALUE);
         articleUseCase.findAllPageable(page);
 
-        Mockito.verify(articlePersistencePort, Mockito.times(ConsUtils.INTEGER_1)).findAllByArticleIdsAndCategoryAndBrandNameAsc(Mockito.any(), Mockito.any());
+        Mockito.verify(articlePersistencePort, Mockito.times(ConsUtils.INTEGER_1)).findAll(Mockito.any());
     }
 
     /*** Buy cart flow ***/

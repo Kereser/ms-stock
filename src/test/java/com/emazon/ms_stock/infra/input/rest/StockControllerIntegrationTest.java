@@ -206,14 +206,14 @@ class StockControllerIntegrationTest {
         sentPostToCreateEntity(mapper.writeValueAsString(articleReqDTO), ConsUtils.builderPath().withArticles().build()).andExpect(status().isCreated());
 
         mockMvc.perform(MockMvcRequestBuilders.get(ConsUtils.builderPath().withArticles().build())
-                        .param(ConsUtils.COLUMN_PARAM, ConsUtils.CATEGORY_PARAM_VALUE)
+                        .param(ConsUtils.COLUMN_PARAM, ConsUtils.CATEGORIES_PARAM_VALUE)
                         .param(ConsUtils.DIRECTION_PARAM, ConsUtils.SORT_ASC_VALUE))
                     .andExpect(jsonPath(ConsUtils.FIELD_CONTENT, Matchers.iterableWithSize(ConsUtils.INTEGER_2)))
                     .andExpect(jsonPath(ConsUtils.FIELD_TOTAL_ELEMENTS).value(ConsUtils.INTEGER_2))
                     .andExpect(jsonPath(ConsUtils.NAME_OF_FIRST_CATEGORY_ON_ARTICLE).value(ConsUtils.TEST_NAME));
 
         ResultActions res = mockMvc.perform(MockMvcRequestBuilders.get(ConsUtils.builderPath().withArticles().build())
-                        .param(ConsUtils.COLUMN_PARAM, ConsUtils.CATEGORY_PARAM_VALUE)
+                        .param(ConsUtils.COLUMN_PARAM, ConsUtils.CATEGORIES_PARAM_VALUE)
                         .param(ConsUtils.DIRECTION_PARAM, ConsUtils.SORT_DESC_VALUE))
                 .andExpect(jsonPath(ConsUtils.FIELD_CONTENT, Matchers.iterableWithSize(ConsUtils.INTEGER_2)))
                 .andExpect(jsonPath(ConsUtils.FIELD_TOTAL_ELEMENTS).value(ConsUtils.INTEGER_2))
@@ -225,14 +225,14 @@ class StockControllerIntegrationTest {
     /*** Supply + Token Security ***/
     @Test
     void Should_ThrowsException_When_InvalidToken() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post(ConsUtils.SUPPLY_URL)
+        mockMvc.perform(MockMvcRequestBuilders.post(ConsUtils.SUPPLY_TEST_URL)
                     .header(ConsUtils.AUTHORIZATION, ConsUtils.BEARER + " "))
                     .andExpect(status().isUnauthorized());
     }
 
     @Test
     void Should_ThrowsException_When_NotValidRoleOnToken() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post(ConsUtils.SUPPLY_URL)
+        mockMvc.perform(MockMvcRequestBuilders.post(ConsUtils.SUPPLY_TEST_URL)
                     .header(ConsUtils.AUTHORIZATION, ConsUtils.BEARER + getClientToken()))
                     .andExpect(status().isForbidden());
     }
@@ -350,7 +350,7 @@ class StockControllerIntegrationTest {
         createArticle();
 
         mockMvc.perform(get(ConsUtils.builderPath().withCart().withArticles().withArticlesIds().build(), ConsUtils.LONG_1)
-                        .params(buildParams(Map.of(ConsUtils.COLUMNS_PARAM, ConsUtils.CATEGORY_PARAM_VALUE + ConsUtils.COMMA_DELIMITER + ConsUtils.BRAND_PARAM_VALUE)))
+                        .params(buildParams(Map.of(ConsUtils.COLUMNS_PARAM, ConsUtils.CATEGORIES_PARAM_VALUE + ConsUtils.COMMA_DELIMITER + ConsUtils.BRAND_PARAM_VALUE)))
                         .header(ConsUtils.AUTHORIZATION, ConsUtils.BEARER + getClientToken()))
                 .andExpect(jsonPath(ConsUtils.FIELD_TOTAL_ELEMENTS).value(ConsUtils.INTEGER_1))
                 .andExpect(status().isOk());
@@ -362,7 +362,7 @@ class StockControllerIntegrationTest {
         createArticle();
 
         mockMvc.perform(get(ConsUtils.builderPath().withCart().withArticles().withArticlesIds().build(), ConsUtils.LONG_1)
-                        .params(buildParams(Map.of(ConsUtils.COLUMNS_PARAM, ConsUtils.CATEGORY_PARAM_VALUE + ConsUtils.COMMA_DELIMITER + ConsUtils.BRAND_PARAM_VALUE)))
+                        .params(buildParams(Map.of(ConsUtils.COLUMNS_PARAM, ConsUtils.CATEGORIES_PARAM_VALUE + ConsUtils.COMMA_DELIMITER + ConsUtils.BRAND_PARAM_VALUE)))
                         .params(buildParams(Map.of(ConsUtils.DIRECTION_PARAM, ConsUtils.SORT_DESC_VALUE)))
                         .header(ConsUtils.AUTHORIZATION, ConsUtils.BEARER + getClientToken()))
                 .andExpect(jsonPath(ConsUtils.FIELD_TOTAL_ELEMENTS).value(ConsUtils.INTEGER_1))
@@ -442,7 +442,7 @@ class StockControllerIntegrationTest {
     }
 
     private ResultActions postSupplyWithAuxDepotToken() throws Exception {
-        return mockMvc.perform(MockMvcRequestBuilders.post(ConsUtils.SUPPLY_URL)
+        return mockMvc.perform(MockMvcRequestBuilders.post(ConsUtils.SUPPLY_TEST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(itemsReqDTO))
                 .header(ConsUtils.AUTHORIZATION, ConsUtils.BEARER + getAuxDepotToken()));
