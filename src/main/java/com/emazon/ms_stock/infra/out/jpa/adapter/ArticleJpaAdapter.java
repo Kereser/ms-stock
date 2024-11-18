@@ -1,17 +1,25 @@
 package com.emazon.ms_stock.infra.out.jpa.adapter;
 
+import com.emazon.ms_stock.ConsUtils;
 import com.emazon.ms_stock.application.dto.handlers.PageDTO;
+import com.emazon.ms_stock.application.dto.handlers.PageHandler;
 import com.emazon.ms_stock.application.dto.out.ArticlesPriceDTO;
+import com.emazon.ms_stock.application.utils.ParsingUtils;
 import com.emazon.ms_stock.domain.model.Article;
 import com.emazon.ms_stock.domain.spi.IArticlePersistencePort;
 import com.emazon.ms_stock.infra.out.jpa.entity.ArticleEntity;
 import com.emazon.ms_stock.infra.out.jpa.mapper.ArticleEntityMapper;
 import com.emazon.ms_stock.infra.out.jpa.repository.ArticleJpaRepository;
+import com.emazon.ms_stock.infra.out.jpa.repository.specification.ArticleSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class ArticleJpaAdapter implements IArticlePersistencePort {
@@ -25,24 +33,30 @@ public class ArticleJpaAdapter implements IArticlePersistencePort {
     }
 
     @Override
-    public PageDTO<Article> findAllByArticleIdPageable(Pageable page, Set<Long> articleIds) {
-        PageDTO<ArticleEntity> pageEntity = mapper.articleEntityPageToArticleEntityPageDTO(repository.findAllByArticleIdPageable(page, articleIds));
+    public PageDTO<Article> findAll(PageHandler page) {
+        Pageable pageable = ParsingUtils.toPageableUnsorted(page);
+        Specification<ArticleEntity> spec = buildSpecWithFiltersAndOrderBy(page);
 
+        PageDTO<ArticleEntity> pageEntity = mapper.articleEntityPageToArticleEntityPageDTO(repository.findAll(spec, pageable));
         return mapper.articleEntityPageDTOToArticlePageDTO(pageEntity);
     }
 
-    @Override
-    public PageDTO<Article> findAllByCategoryNameAsc(Pageable page, Set<Long> articleIds) {
-        PageDTO<ArticleEntity> pageEntity = mapper.articleEntityPageToArticleEntityPageDTO(repository.findAllArticlesOrderByCategoryNameASC(page, articleIds));
+    private Specification<ArticleEntity> buildSpecWithFiltersAndOrderBy(PageHandler page) {
+        Set<Long> articleIds = buildArticleIds(page.getFilters().getOrDefault(ConsUtils.ARTICLE_IDS, null));
 
-        return mapper.articleEntityPageDTOToArticlePageDTO(pageEntity);
+        return ArticleSpecification.orderBy(page.getColumn(), page.getDirection().equalsIgnoreCase(ConsUtils.ASC))
+                .and(ArticleSpecification.hasArticleIds(articleIds))
+                .and(ArticleSpecification.hasBrandName(page.getFilters().getOrDefault(ConsUtils.BRAND_NAME, null)))
+                .and(ArticleSpecification.hasCategoryName(page.getFilters().getOrDefault(ConsUtils.CATEGORY_NAME, null)));
     }
 
-    @Override
-    public PageDTO<Article> findAllByCategoryNameDesc(Pageable page, Set<Long> articleIds) {
-        PageDTO<ArticleEntity> pageEntity = mapper.articleEntityPageToArticleEntityPageDTO(repository.findAllArticlesOrderByCategoryNameDESC(page, articleIds));
+    private Set<Long> buildArticleIds(String articleIds) {
+        if (articleIds == null || articleIds.isEmpty()) return new HashSet<>();
 
-        return mapper.articleEntityPageDTOToArticlePageDTO(pageEntity);
+        return Arrays.asList(articleIds.split(ConsUtils.COMMA_DELIMITER))
+                .stream()
+                .map(Long::parseLong)
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -53,18 +67,6 @@ public class ArticleJpaAdapter implements IArticlePersistencePort {
     @Override
     public void saveAll(Iterable<Article> articles) {
         repository.saveAll(mapper.articlesToArticleEntities(articles));
-    }
-
-    @Override
-    public PageDTO<Article> findAllByArticleIdsAndCategoryAndBrandNameAsc(Pageable page, Set<Long> articleIds) {
-        PageDTO<ArticleEntity> articleEntityPageDTO = mapper.articleEntityPageToArticleEntityPageDTO(repository.findAllByArticleIdsAndCategoryAndBrandNameAsc(page, articleIds));
-        return mapper.articleEntityPageDTOToArticlePageDTO(articleEntityPageDTO);
-    }
-
-    @Override
-    public PageDTO<Article> findAllByArticleIdsCategoryAndBrandNameDesc(Pageable page, Set<Long> articleIds) {
-        PageDTO<ArticleEntity> articleEntityPageDTO = mapper.articleEntityPageToArticleEntityPageDTO(repository.findAllByArticleIdsAndCategoryAndBrandNameDesc(page, articleIds));
-        return mapper.articleEntityPageDTOToArticlePageDTO(articleEntityPageDTO);
     }
 
     @Override

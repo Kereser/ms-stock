@@ -10,10 +10,6 @@ import com.emazon.ms_stock.domain.api.IArticleServicePort;
 import com.emazon.ms_stock.domain.model.Article;
 import com.emazon.ms_stock.domain.model.Brand;
 import com.emazon.ms_stock.domain.model.Category;
-import com.emazon.ms_stock.domain.model.sort.BasicSortStrategy;
-import com.emazon.ms_stock.domain.model.sort.CategoryBrandNameStrategy;
-import com.emazon.ms_stock.domain.model.sort.CategoryNameStrategy;
-import com.emazon.ms_stock.domain.model.sort.SortingStrategy;
 import com.emazon.ms_stock.domain.spi.IArticlePersistencePort;
 import com.emazon.ms_stock.domain.spi.IBrandPersistencePort;
 import com.emazon.ms_stock.domain.spi.ICategoryPersistencePort;
@@ -75,29 +71,7 @@ public class ArticleUseCase implements IArticleServicePort {
 
     @Override
     public PageDTO<Article> findAllPageable(PageHandler pageable) {
-        SortingStrategy sortingStrategy = determineSortingStrategy(pageable);
-
-        return sortingStrategy.sort(pageable);
-    }
-
-    private SortingStrategy determineSortingStrategy(PageHandler pageable) {
-        if (isSortByCategoryBrandName(pageable.getColumn())) {
-            return new CategoryBrandNameStrategy(persistencePort);
-        }
-
-        if (isSortByCategoryName(pageable.getColumn())) {
-            return new CategoryNameStrategy(persistencePort);
-        }
-
-        return new BasicSortStrategy(persistencePort);
-    }
-
-    private boolean isSortByCategoryName(String column) {
-        return column.equalsIgnoreCase(ConsUtils.CATEGORY_PARAM_VALUE);
-    }
-
-    private boolean isSortByCategoryBrandName(String column) {
-        return column.split(",").length == ConsUtils.INTEGER_2;
+        return persistencePort.findAll(pageable);
     }
 
     @Override

@@ -29,10 +29,10 @@ public class Article {
         this.brand = brand;
     }
 
-    public static final String INNER_SORT_CATEGORY_NAME = "category:name";
+    public static final String CATEGORIES_NAME = "categories:name";
+    public static final String BRAND_NAME = "brand:name";
     public static final String NAME_SORT = "name";
-    public static final String DESCRIPTION_SORT = "description";
-    public static final List<String> VALID_SORT_FIELDS = List.of(NAME_SORT, DESCRIPTION_SORT, INNER_SORT_CATEGORY_NAME);
+    public static final List<String> VALID_SORT_FIELDS = List.of(NAME_SORT, BRAND_NAME, CATEGORIES_NAME);
 
     public Long getId() {
         return id;
@@ -96,8 +96,8 @@ public class Article {
         this.brand = brand;
     }
 
-    public static Boolean isValidSortField(String fields) {
-        return VALID_SORT_FIELDS.contains(fields);
+    public static Boolean isValidSortField(String field) {
+        return VALID_SORT_FIELDS.contains(field);
     }
 
     public LocalDateTime getCreatedAt() {
