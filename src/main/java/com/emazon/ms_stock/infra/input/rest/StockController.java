@@ -93,13 +93,13 @@ public class StockController {
 
     @GetMapping(ConsUtils.ARTICLES_FOR_CART_URL)
     public ResponseEntity<PageDTO<ArticleResDTO>> getCartArticles(
+            @PathVariable String articleIds,
             @RequestParam(defaultValue = ConsUtils.ASC) SortOrder direction,
             @RequestParam(defaultValue = ConsUtils.INTEGER_STR_20) Integer pageSize,
             @RequestParam(defaultValue = ConsUtils.INTEGER_STR_0) Integer page,
             @RequestParam(defaultValue = ConsUtils.EMPTY) String categoryName,
-            @RequestParam(defaultValue = ConsUtils.EMPTY) String brandName,
-            @PathVariable String articleIds) {
-        return ResponseEntity.ok().body(stockHandler.getArticlesForCart(direction.name(), pageSize, page, ConsUtils.NAME, articleIds));
+            @RequestParam(defaultValue = ConsUtils.EMPTY) String brandName) {
+        return ResponseEntity.ok().body(stockHandler.getArticlesForCart(direction.name(), pageSize, page, ConsUtils.NAME, categoryName, brandName, articleIds));
     }
 
     @GetMapping(ConsUtils.ARTICLE_PRICE_URL)
