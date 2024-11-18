@@ -10,7 +10,7 @@ import com.emazon.ms_stock.domain.spi.IArticlePersistencePort;
 import com.emazon.ms_stock.infra.out.jpa.entity.ArticleEntity;
 import com.emazon.ms_stock.infra.out.jpa.mapper.ArticleEntityMapper;
 import com.emazon.ms_stock.infra.out.jpa.repository.ArticleJpaRepository;
-import com.emazon.ms_stock.infra.out.jpa.repository.sort.ArticleSpecification;
+import com.emazon.ms_stock.infra.out.jpa.repository.specification.ArticleSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
